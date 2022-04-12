@@ -1,8 +1,10 @@
 package antihackerman.backendapp.pki.keystores;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -74,7 +76,7 @@ public class KeyStoreReader {
             KeyStore ks = KeyStore.getInstance("JKS", "SUN");
 
             // ucitavamo podatke
-            BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream("./src/main/resources/"+keyStoreFile));
             ks.load(in, keyStorePass.toCharArray());
 
             if (ks.isKeyEntry(alias)) {

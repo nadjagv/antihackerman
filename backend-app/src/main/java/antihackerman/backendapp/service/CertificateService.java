@@ -3,6 +3,8 @@ package antihackerman.backendapp.service;
 import antihackerman.backendapp.pki.data.IssuerData;
 import antihackerman.backendapp.pki.data.RootData;
 import antihackerman.backendapp.pki.data.SubjectData;
+import antihackerman.backendapp.pki.keystores.KeyStoreReader;
+
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -13,12 +15,15 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.stereotype.Service;
+import java.security.cert.Certificate;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,6 +34,7 @@ import java.util.Date;
 public class CertificateService {
 
     private KeyStore keyStore;
+    private KeyStoreReader keyStoreReader;
 
     public void createNewKeyStore(String fileName, char[] password) {
         // TODO: Upotrebom klasa iz primeri/pki paketa, implementirati funkciju gde korisnik unosi ime keystore datoteke i ona se kreira
@@ -42,6 +48,24 @@ public class CertificateService {
         } catch (NoSuchAlgorithmException | CertificateException | IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public Certificate  getCertificateByAlias(String alias) {
+    	keyStoreReader=new KeyStoreReader();
+    	return keyStoreReader.readCertificate("./keystore", "", alias);
+    }
+    
+    public boolean checkValidityForCertificate(String alias) {
+    	keyStoreReader=new KeyStoreReader();
+    	Certificate cert=keyStoreReader.readCertificate("./keystore", "", alias);
+    	try {
+			((X509Certificate)cert).checkValidity();
+		} catch (CertificateExpiredException e) {
+			return false;
+		} catch (CertificateNotYetValidException e) {
+			return false;
+		}
+    	return true;
     }
 
     public void showKeyStoreContent() {
