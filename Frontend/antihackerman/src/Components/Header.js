@@ -11,11 +11,45 @@ function Header() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to="/">Home</Link>
+          <Typography
+            color="inherit"
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1 }}
+          >
+            <Link style={{ textDecoration: "none" }} to="/">
+              Home
+            </Link>
           </Typography>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to="/certificates">Certificates</Link>
+          <Typography
+            color="inherit"
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1 }}
+          >
+            <Link style={{ textDecoration: "none" }} to="/certificates">
+              Certificates
+            </Link>
+          </Typography>
+          <Typography
+            color="inherit"
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1 }}
+          >
+            <Link style={{ textDecoration: "none" }} to="/CSRs">
+              CSRs
+            </Link>
+          </Typography>
+          <Typography
+            color="inherit"
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1 }}
+          >
+            <Link style={{ textDecoration: "none" }} to="/newCSR">
+              New CSR
+            </Link>
           </Typography>
         </Toolbar>
       </AppBar>

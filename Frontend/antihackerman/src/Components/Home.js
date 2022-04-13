@@ -1,6 +1,10 @@
 import React from "react";
 
 function Home() {
-  return <div>Home</div>;
+  return (
+    <div>
+      <img src="/binary-code-greenjpg.jpg"></img>
+    </div>
+  );
 }
 export default Home;
