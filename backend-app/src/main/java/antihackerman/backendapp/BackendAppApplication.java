@@ -17,6 +17,8 @@ public class BackendAppApplication {
 		CertificateService cs = new CertificateService();
 		X509Certificate cert = cs.createNewSelfSignedCertificate();
 		System.out.println(cert);
+		
+		
 
 		SpringApplication.run(BackendAppApplication.class, args);
 	}
