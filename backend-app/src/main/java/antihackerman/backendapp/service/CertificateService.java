@@ -1,10 +1,9 @@
 package antihackerman.backendapp.service;
 
-import antihackerman.backendapp.pki.data.IssuerData;
-import antihackerman.backendapp.pki.data.RootData;
-import antihackerman.backendapp.pki.data.SubjectData;
+import antihackerman.backendapp.model.RootData;
 import antihackerman.backendapp.pki.keystores.KeyStoreReader;
 
+import antihackerman.backendapp.util.KeyPairUtil;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -114,22 +113,11 @@ public class CertificateService {
         // Radi ustede vremena hardkodovati podatke vezane za subjekta sertifikata
     }
 
-    private KeyPair generateKeyPair() {
-        try {
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-            keyGen.initialize(2048, random);
-            return keyGen.generateKeyPair();
-        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 
     private RootData generateRootData() {
         try {
-            KeyPair keyPairSubject = generateKeyPair();
+            KeyPair keyPairSubject = KeyPairUtil.generateKeyPair();
 
             // Datumi od kad do kad vazi sertifikat
             LocalDate start = LocalDate.now().minusYears(1);

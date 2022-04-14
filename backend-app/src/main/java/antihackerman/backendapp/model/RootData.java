@@ -1,4 +1,4 @@
-package antihackerman.backendapp.pki.data;
+package antihackerman.backendapp.model;
 
 import lombok.*;
 import org.bouncycastle.asn1.x500.X500Name;
