@@ -1,21 +1,19 @@
 package antihackerman.backendapp.pki.data;
 
 import java.math.BigInteger;
+import java.security.cert.CRLReason;
 import java.util.Date;
+
 
 public class X509CRLEntryWrapper { 
     private BigInteger serialNumber; 
     private Date revocationDate; 
+    private CRLReason reason;
  
-    /**
-     * Instantiates a new simple crl entry. 
-     * 
-     * @param serialNumber the serial number 
-     * @param revocationDate the revocation date 
-     */ 
-    public X509CRLEntryWrapper(BigInteger serialNumber, Date revocationDate) { 
+    public X509CRLEntryWrapper(BigInteger serialNumber, Date revocationDate, CRLReason crlReason) { 
         this.serialNumber = serialNumber; 
         this.revocationDate = revocationDate; 
+        this.reason=crlReason;
     } 
  
     public BigInteger getSerialNumber() { 
@@ -24,5 +22,11 @@ public class X509CRLEntryWrapper {
  
     public Date getRevocationDate() { 
         return this.revocationDate; 
-    } 
+    }
+
+	public CRLReason getReason() {
+		return reason;
+	}
+
+    
 }

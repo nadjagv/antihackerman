@@ -60,7 +60,7 @@ public class PKIUtil {
         generator.setSignatureAlgorithm("SHA1WITHRSA"); 
         for (X509CRLEntryWrapper entry : entries) { 
             generator.addCRLEntry(entry.getSerialNumber(), entry.getRevocationDate(), 
-                CRLReason.privilegeWithdrawn); 
+                entry.getReason().ordinal()); 
         }
         try {
 			generator.addExtension(X509Extensions.AuthorityKeyIdentifier, false, new AuthorityKeyIdentifierStructure(cert));

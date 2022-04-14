@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.cert.CRLException;
+import java.security.cert.CRLReason;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.CRLReason;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v2CRLBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -51,15 +51,15 @@ public class CRLService {
 			Set<? extends X509CRLEntry> test=crl.getRevokedCertificates();
 			if(test!=null) {
 				for(X509CRLEntry entry: test) {
-					enteries.add(new X509CRLEntryWrapper(entry.getSerialNumber(),entry.getRevocationDate()));
+					enteries.add(new X509CRLEntryWrapper(entry.getSerialNumber(),entry.getRevocationDate(),entry.getRevocationReason()));
 				}
 			}
-			enteries.add(new X509CRLEntryWrapper(serialNumber,new Date()));
+			enteries.add(new X509CRLEntryWrapper(serialNumber,new Date(),CRLReason.AA_COMPROMISE));
 			crl=pkiUtil.createCRL(enteries);
 			test=crl.getRevokedCertificates();
 			if(test!=null) {
 				for(X509CRLEntry entry: test) {
-					System.out.println(entry.getSerialNumber());
+					System.out.println(entry.getSerialNumber()+" "+entry.getRevocationDate()+" "+entry.getRevocationReason());
 				}
 				System.out.println(test.size());
 			}
