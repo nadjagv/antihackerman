@@ -1,17 +1,19 @@
 package antihackerman.backendapp.service;
 
 import antihackerman.backendapp.dto.CSRdto;
+import antihackerman.backendapp.model.CSR;
 import antihackerman.backendapp.model.Extension;
-import antihackerman.backendapp.model.RootData;
 import antihackerman.backendapp.model.SubjectData;
+import antihackerman.backendapp.util.FileUtil;
 import antihackerman.backendapp.util.KeyPairUtil;
-import org.bouncycastle.asn1.*;
-import org.bouncycastle.asn1.pkcs.Attribute;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.ContentVerifierProvider;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -21,20 +23,21 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.PKCSException;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.security.KeyPair;
-import java.security.cert.X509Certificate;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CSRService {
+
+    private static String CSR_DIR_PATH = ".\\src\\main\\resources\\csr\\";
 
 
     public PKCS10CertificationRequest isValidSigned(String csr, Boolean renew) throws Exception {
@@ -52,15 +55,18 @@ public class CSRService {
 
     public void addRequest(String csr) throws Exception {
         PKCS10CertificationRequest certReq = isValidSigned(csr, false);
-        writeCSRToFileBase64Encoded(certReq, ".\\src\\main\\resources\\csr\\nesto.csr");
+        String uniqueFilename = generateUniqueId();
+        writeCSRToFileBase64Encoded(certReq, CSR_DIR_PATH + uniqueFilename + ".csr");
     }
 
+
     static void writeCSRToFileBase64Encoded(PKCS10CertificationRequest csr, String fileName) throws Exception {
-        FileOutputStream certificateOut = new FileOutputStream(fileName);
-        certificateOut.write("-----BEGIN CERTIFICATE-----".getBytes());
-        certificateOut.write(Base64.getEncoder().encode(csr.getEncoded()));
-        certificateOut.write("-----END CERTIFICATE-----".getBytes());
-        certificateOut.close();
+        PemObject pemObject = new PemObject("CERTIFICATE REQUEST", csr.getEncoded());
+        FileWriter fw = new FileWriter(fileName);
+        PemWriter pemWriter = new PEMWriter(fw);
+        pemWriter.writeObject(pemObject);
+        pemWriter.close();
+        fw.close();
     }
 
     public PKCS10CertificationRequest generateCSR(SubjectData subjectData, ArrayList<Extension> extensions) throws Exception {
@@ -74,14 +80,12 @@ public class CSRService {
 
         }
 
-
-
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
         contentSignerBuilder = contentSignerBuilder.setProvider("BC");
         ContentSigner contentSigner = contentSignerBuilder.build(subjectData.getPrivateKey());
         PKCS10CertificationRequest csr = p10Builder.build(contentSigner);
-
-        writeCSRToFileBase64Encoded(csr, ".\\src\\main\\resources\\csr\\testttt.csr");
+        String uniqueFilename = generateUniqueId();
+        writeCSRToFileBase64Encoded(csr, CSR_DIR_PATH + uniqueFilename + ".csr");
         return csr;
     }
 
@@ -98,6 +102,64 @@ public class CSRService {
         builder.addRDN(BCStyle.E, dto.getEmail());
         builder.addRDN(BCStyle.UID, dto.getUid());
         return new SubjectData(keyPairSubject.getPublic(), keyPairSubject.getPrivate(), builder.build());
+    }
+
+    public List<CSR> readAllCSRs() throws Exception {
+        ArrayList<CSR> result = new ArrayList<>();
+        File dir = new File(CSR_DIR_PATH);
+        File[] directoryListing = dir.listFiles();
+        if (directoryListing != null) {
+            for (File f : directoryListing) {
+                CSR csr = readCSR(f);
+                result.add(csr);
+            }
+        } else {
+            throw new Exception("No CSRs found.");
+        }
+
+
+        return result;
+    }
+
+
+
+    public CSR readCSR(File file) throws Exception {
+        String fileContent = FileUtil.readFile(file);
+
+        PKCS10CertificationRequest csr = getPKSCFromContent(fileContent);
+
+        X500Name subjectData = csr.getSubject();
+
+        CSR result = new CSR();
+        result.setCommonName(subjectData.getRDNs(BCStyle.CN)[0].getFirst().getValue().toString());
+        result.setSurname(subjectData.getRDNs(BCStyle.SURNAME)[0].getFirst().getValue().toString());
+        result.setGivenname(subjectData.getRDNs(BCStyle.GIVENNAME)[0].getFirst().getValue().toString());
+        result.setOrganization(subjectData.getRDNs(BCStyle.O)[0].getFirst().getValue().toString());
+        result.setOrganizationUnit(subjectData.getRDNs(BCStyle.OU)[0].getFirst().getValue().toString());
+        result.setCountry(subjectData.getRDNs(BCStyle.C)[0].getFirst().getValue().toString());
+        result.setEmail(subjectData.getRDNs(BCStyle.E)[0].getFirst().getValue().toString());
+        result.setUid(subjectData.getRDNs(BCStyle.UID)[0].getFirst().getValue().toString());
+
+        result.setUniqueFilename(file.getName());
+
+        return result;
+    }
+
+    private PKCS10CertificationRequest getPKSCFromContent(String fileContent) throws IOException {
+        System.out.println(fileContent);
+        fileContent = fileContent.replace("-----BEGIN CERTIFICATE REQUEST-----", "");
+
+        fileContent = fileContent.replace("-----END CERTIFICATE REQUEST-----", "");
+
+        fileContent = fileContent.trim();
+        System.out.println(fileContent);
+        PemObject pemObject = new PemObject("CERTIFICATE REQUEST", Base64.decodeBase64(fileContent));
+
+        return new PKCS10CertificationRequest(pemObject.getContent());
+    }
+
+    public String generateUniqueId(){
+        return UUID.randomUUID().toString();
     }
 
 }
