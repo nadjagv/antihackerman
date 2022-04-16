@@ -52,6 +52,30 @@ public class CSRController {
             e.printStackTrace();
             return new ResponseEntity<ArrayList<CSRdto>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/{uniqueFilename}")
+    public ResponseEntity<CSRdto> getAll(@PathVariable String uniqueFilename){
+
+        try {
+            CSR csr = csrService.readSingleCSR(uniqueFilename);
+            return new ResponseEntity<CSRdto>(new CSRdto(csr), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<CSRdto>(new CSRdto(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/rejectCSR/{uniqueFilename}")
+    public ResponseEntity<String> rejectCSR(@PathVariable String uniqueFilename){
+
+        try {
+            csrService.rejectCSR(uniqueFilename);
+            return new ResponseEntity<String>("success",HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("file does not exist",HttpStatus.NOT_FOUND);
+        }
 
 
     }

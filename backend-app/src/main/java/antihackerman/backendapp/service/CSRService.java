@@ -29,6 +29,8 @@ import org.bouncycastle.util.io.pem.PemWriter;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +112,7 @@ public class CSRService {
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {
             for (File f : directoryListing) {
-                CSR csr = readCSR(f);
+                CSR csr = readCSRFile(f);
                 result.add(csr);
             }
         } else {
@@ -121,9 +123,18 @@ public class CSRService {
         return result;
     }
 
+    public CSR readSingleCSR(String filename) throws Exception {
+        String path = CSR_DIR_PATH + filename;
+        if (!Files.exists(Paths.get(path))){
+            throw new Exception("File does not exist.");
+        }
+        File file = new File(path);
+        return readCSRFile(file);
+    }
 
 
-    public CSR readCSR(File file) throws Exception {
+
+    public CSR readCSRFile(File file) throws Exception {
         String fileContent = FileUtil.readFile(file);
 
         PKCS10CertificationRequest csr = getPKSCFromContent(fileContent);
@@ -156,6 +167,14 @@ public class CSRService {
         PemObject pemObject = new PemObject("CERTIFICATE REQUEST", Base64.decodeBase64(fileContent));
 
         return new PKCS10CertificationRequest(pemObject.getContent());
+    }
+
+    public void rejectCSR(String filename) throws Exception {
+        String path = CSR_DIR_PATH + filename;
+        if (!Files.exists(Paths.get(path))){
+            throw new Exception("File does not exist.");
+        }
+        Files.delete(Paths.get(path));
     }
 
     public String generateUniqueId(){
