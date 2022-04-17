@@ -11,11 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import antihackerman.backendapp.dto.CertificateDTO;
 import antihackerman.backendapp.service.CRLService;
 import antihackerman.backendapp.service.CertificateService;
+
+import java.security.cert.CRLReason;
 
 @RestController
 @RequestMapping("/cert")
@@ -26,6 +31,14 @@ public class CertificateController {
 	
 	@Autowired
 	private CRLService crlService;
+	
+	@GetMapping("")
+	public ResponseEntity<List<CertificateDTO>> getAllCertificates(){
+
+		List<CertificateDTO> dtos=certService.getAllCerts();
+		return new ResponseEntity<List<CertificateDTO>>(dtos,HttpStatus.OK);
+
+	}
 	
 	@GetMapping("/{alias}")
 	public ResponseEntity<String> getCertificate(@PathVariable String alias){
@@ -49,8 +62,8 @@ public class CertificateController {
 	}
 	
 	@PutMapping("/crl/{serial}")
-	public void revokeCert(@PathVariable Integer serial){
-		crlService.revokeCert(new BigInteger(serial.toString()));
+	public void revokeCert(@PathVariable Integer serial,@RequestBody CRLReason reason){
+		crlService.revokeCert(new BigInteger(serial.toString()),reason);
 	}
 	
 	@GetMapping("/crl/{serial}")

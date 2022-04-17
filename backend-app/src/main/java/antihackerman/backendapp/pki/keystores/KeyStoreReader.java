@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -14,10 +15,14 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
+import antihackerman.backendapp.dto.CertificateDTO;
 import antihackerman.backendapp.pki.data.IssuerData;
 
 public class KeyStoreReader {
@@ -98,7 +103,7 @@ public class KeyStoreReader {
             KeyStore ks = KeyStore.getInstance("JKS", "SUN");
 
             // ucitavamo podatke
-            BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream("./src/main/resources/"+keyStoreFile));
             ks.load(in, keyStorePass.toCharArray());
 
             if (ks.isKeyEntry(alias)) {
@@ -109,5 +114,32 @@ public class KeyStoreReader {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public List<CertificateDTO> getAllCerts(String keyStoreFile, String keyStorePass) {
+    	try {
+    		List<CertificateDTO> certs=new ArrayList<CertificateDTO>();
+    		KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+        	
+        	BufferedInputStream in = new BufferedInputStream(new FileInputStream("./src/main/resources/"+keyStoreFile));
+            ks.load(in, keyStorePass.toCharArray());
+        	
+        	Enumeration<String> enumeration = ks.aliases();
+            while(enumeration.hasMoreElements()) {
+                String alias = enumeration.nextElement();
+                System.out.println("alias name: " + alias);
+                Certificate certificate = ks.getCertificate(alias);
+                BigInteger serial=((X509Certificate)certificate).getSerialNumber();
+                certs.add(new CertificateDTO(alias,serial));
+                //System.out.println(certificate.toString());
+
+            }
+            return certs;
+    	}catch(KeyStoreException | NoSuchProviderException | NoSuchAlgorithmException |
+                CertificateException | IOException e){
+    		e.printStackTrace();
+    	}
+    	return null;
+    	
     }
 }

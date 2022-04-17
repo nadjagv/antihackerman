@@ -44,7 +44,7 @@ public class CRLService {
 		}
 	}
 	
-	public void revokeCert(BigInteger serialNumber) {
+	public void revokeCert(BigInteger serialNumber,CRLReason reason) {
 		try {
 			X509CRL crl = pkiUtil.readCRLFile(new File("./src/main/resources/"+"CRL"));
 			List<X509CRLEntryWrapper> enteries=new ArrayList<X509CRLEntryWrapper>();
@@ -54,7 +54,7 @@ public class CRLService {
 					enteries.add(new X509CRLEntryWrapper(entry.getSerialNumber(),entry.getRevocationDate(),entry.getRevocationReason()));
 				}
 			}
-			enteries.add(new X509CRLEntryWrapper(serialNumber,new Date(),CRLReason.AA_COMPROMISE));
+			enteries.add(new X509CRLEntryWrapper(serialNumber,new Date(),reason));
 			crl=pkiUtil.createCRL(enteries);
 			test=crl.getRevokedCertificates();
 			if(test!=null) {

@@ -1,5 +1,6 @@
 package antihackerman.backendapp.service;
 
+import antihackerman.backendapp.dto.CertificateDTO;
 import antihackerman.backendapp.model.RootData;
 import antihackerman.backendapp.model.SubjectData;
 import antihackerman.backendapp.pki.data.IssuerData;
@@ -33,6 +34,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class CertificateService {
@@ -53,6 +57,11 @@ public class CertificateService {
         } catch (NoSuchAlgorithmException | CertificateException | IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public List<CertificateDTO> getAllCerts() {
+    	keyStoreReader=new KeyStoreReader();
+    	return keyStoreReader.getAllCerts("./keystore", "");
     }
     
     public Certificate  getCertificateByAlias(String alias) {
