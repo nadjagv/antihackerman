@@ -17,6 +17,8 @@ public class FileUtil {
                 sb.append(line);
                 sb.append("\n");
             }
+            br.close();
+            is.close();
         } catch (IOException e) {
             throw new Exception(e.getMessage());
         }
@@ -36,6 +38,8 @@ public class FileUtil {
                 sb.append(line);
                 sb.append("\n");
             }
+            br.close();
+            is.close();
         } catch (IOException e) {
             throw new Exception(e.getMessage());
         }
@@ -54,6 +58,8 @@ public class FileUtil {
                 sb.append(line);
                 sb.append("\n");
             }
+            br.close();
+            is.close();
         } catch (IOException e) {
             throw new Exception(e.getMessage());
         }

@@ -22,7 +22,7 @@ function CSRs() {
 
   const rejectCSR = (filename) => {
     axios
-      .get(environment.baseURL + "csr/reject/" + filename)
+      .get(environment.baseURL + "csr/rejectCSR/" + filename)
       .then((reponse) => {
         console.log("Success");
       });
