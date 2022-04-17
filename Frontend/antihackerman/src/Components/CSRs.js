@@ -16,13 +16,19 @@ function CSRs() {
   useEffect(() => {
     axios.get(environment.baseURL + "csr").then((response) => {
       setCsrs(response.data);
-      //console.log(response.data);
     });
   }, []);
 
   const rejectCSR = (filename) => {
     axios
       .get(environment.baseURL + "csr/rejectCSR/" + filename)
+      .then((reponse) => {
+        console.log("Success");
+      });
+  };
+  const acceptCSR = (filename) => {
+    axios
+      .get(environment.baseURL + "csr/approveCSR/" + filename)
       .then((reponse) => {
         console.log("Success");
       });
@@ -66,6 +72,15 @@ function CSRs() {
                     color="error"
                   >
                     Deny request
+                  </Button>
+                  <Button
+                    onClick={(e) => {
+                      acceptCSR(csr.uniqueFilename);
+                    }}
+                    variant="outlined"
+                    color="success"
+                  >
+                    Accept request
                   </Button>
                 </TableCell>
               </TableRow>
