@@ -1,8 +1,11 @@
 package antihackerman.backendapp.service;
 
 import antihackerman.backendapp.model.RootData;
+import antihackerman.backendapp.model.SubjectData;
+import antihackerman.backendapp.pki.data.IssuerData;
 import antihackerman.backendapp.pki.keystores.KeyStoreReader;
 
+import antihackerman.backendapp.pki.keystores.KeyStoreWriter;
 import antihackerman.backendapp.util.KeyPairUtil;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -27,13 +30,16 @@ import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Random;
 
 @Service
 public class CertificateService {
 
     private KeyStore keyStore;
     private KeyStoreReader keyStoreReader;
+    private static String keyPass = "";
 
     public void createNewKeyStore(String fileName, char[] password) {
         // TODO: Upotrebom klasa iz primeri/pki paketa, implementirati funkciju gde korisnik unosi ime keystore datoteke i ona se kreira
@@ -108,9 +114,48 @@ public class CertificateService {
         return null;
     }
 
-    public void createNewIssuedCertificate() {
-        // TODO: Upotrebom klasa iz primeri/pki paketa, prikazati sadrzaj keystore-a, gde korisnik unosi sve potrebne podatke
-        // Radi ustede vremena hardkodovati podatke vezane za subjekta sertifikata
+    public X509Certificate generateCertificate(SubjectData subjectData) {
+        try {
+            JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
+
+            builder = builder.setProvider("BC");
+
+            // root
+            keyStoreReader=new KeyStoreReader();
+            IssuerData issuerData = keyStoreReader.readIssuerFromStore("keystore", "antihackerman root", keyPass.toCharArray(), keyPass.toCharArray() );
+
+            ContentSigner contentSigner = builder.build(issuerData.getPrivateKey());
+
+            LocalDate start = LocalDate.now();
+            SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = iso8601Formater.parse(start.toString());
+            Date endDate = iso8601Formater.parse(start.plusYears(1).toString());
+            X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuerData.getX500name(),
+                    new BigInteger(32, new Random()),
+                    startDate,
+                    endDate,
+                    subjectData.getX500name(),
+                    subjectData.getPublicKey());
+
+            X509CertificateHolder certHolder = certGen.build(contentSigner);
+
+            JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
+            certConverter = certConverter.setProvider("BC");
+
+            // Konvertuje objekat u sertifikat
+
+            X509Certificate generatedCertificate =  certConverter.getCertificate(certHolder);
+
+            KeyStoreWriter keyStoreWriter = new KeyStoreWriter();
+            keyStoreWriter.loadKeyStore(".\\src\\main\\resources\\keystore", keyPass.toCharArray());
+            keyStoreWriter.write
+                    (subjectData.getX500name().getRDNs(BCStyle.CN)[0].getFirst().getValue().toString(), issuerData.getPrivateKey(), keyPass.toCharArray(), generatedCertificate);
+            keyStoreWriter.saveKeyStore(".\\src\\main\\resources\\keystore", keyPass.toCharArray());
+            return generatedCertificate;
+        } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException | CertificateException | ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
@@ -150,4 +195,6 @@ public class CertificateService {
         }
         return null;
     }
+
+
 }

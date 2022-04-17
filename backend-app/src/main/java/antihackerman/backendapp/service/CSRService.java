@@ -12,6 +12,8 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.crypto.params.RSAKeyParameters;
+import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.operator.ContentSigner;
@@ -26,13 +28,19 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.util.io.pem.PemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.KeyPair;
+import java.security.*;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +48,9 @@ import java.util.UUID;
 public class CSRService {
 
     private static String CSR_DIR_PATH = ".\\src\\main\\resources\\csr\\";
+
+    @Autowired
+    CertificateService certificateService;
 
 
     public PKCS10CertificationRequest isValidSigned(String csr, Boolean renew) throws Exception {
@@ -88,6 +99,13 @@ public class CSRService {
         PKCS10CertificationRequest csr = p10Builder.build(contentSigner);
         String uniqueFilename = generateUniqueId();
         writeCSRToFileBase64Encoded(csr, CSR_DIR_PATH + uniqueFilename + ".csr");
+        System.out.println(subjectData.getPrivateKey().getEncoded());
+        KeyPairUtil.writeEncryptedPrivateKeyToFile(uniqueFilename, subjectData.getPrivateKey());
+//        KeyPairUtil.writeKeyFileEncoded(subjectData.getPrivateKey(), ".\\src\\main\\resources\\pk\\" + uniqueFilename + ".txt");
+//
+//        PrivateKey privkey = KeyPairUtil.getEncryptedPrivateKeyFromFile(uniqueFilename);
+//        System.out.println(privkey.getEncoded());
+
         return csr;
     }
 
@@ -175,6 +193,30 @@ public class CSRService {
             throw new Exception("File does not exist.");
         }
         Files.delete(Paths.get(path));
+    }
+
+    public void approveCSR(String filename) throws Exception {
+        String path = CSR_DIR_PATH + filename;
+        if (!Files.exists(Paths.get(path))){
+            throw new Exception("File does not exist.");
+        }
+        File file = new File(path);
+        String fileContent = FileUtil.readFile(file);
+        PKCS10CertificationRequest csr = getPKSCFromContent(fileContent);
+
+        SubjectPublicKeyInfo pkInfo = csr.getSubjectPublicKeyInfo();
+        RSAKeyParameters rsa = (RSAKeyParameters) PublicKeyFactory.createKey(pkInfo);
+        RSAPublicKeySpec rsaSpec = new RSAPublicKeySpec(rsa.getModulus(), rsa.getExponent());
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        PublicKey rsaPub = kf.generatePublic(rsaSpec);
+
+        KeyPair kp = KeyPairUtil.generateKeyPair();
+
+
+
+        SubjectData subjectData = new SubjectData(rsaPub, kp.getPrivate(), csr.getSubject());
+
+        certificateService.generateCertificate(subjectData);
     }
 
     public String generateUniqueId(){

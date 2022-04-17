@@ -79,4 +79,18 @@ public class CSRController {
 
 
     }
+
+    @GetMapping("/approveCSR/{uniqueFilename}")
+    public ResponseEntity<String> approveCSR(@PathVariable String uniqueFilename){
+
+        try {
+            csrService.approveCSR(uniqueFilename);
+            return new ResponseEntity<String>("success",HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("file does not exist",HttpStatus.NOT_FOUND);
+        }
+
+
+    }
 }
