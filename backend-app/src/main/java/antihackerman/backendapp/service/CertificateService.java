@@ -1,6 +1,7 @@
 package antihackerman.backendapp.service;
 
 import antihackerman.backendapp.dto.CertificateDTO;
+import antihackerman.backendapp.dto.ExtensionDTO;
 import antihackerman.backendapp.model.RootData;
 import antihackerman.backendapp.model.SubjectData;
 import antihackerman.backendapp.pki.data.IssuerData;
@@ -8,26 +9,31 @@ import antihackerman.backendapp.pki.keystores.KeyStoreReader;
 
 import antihackerman.backendapp.pki.keystores.KeyStoreWriter;
 import antihackerman.backendapp.util.KeyPairUtil;
+import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.DERIA5String;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.stereotype.Service;
-import java.security.cert.Certificate;
+
+import java.security.cert.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
+import java.security.cert.Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -123,7 +129,7 @@ public class CertificateService {
         return null;
     }
 
-    public X509Certificate generateCertificate(SubjectData subjectData) {
+    public X509Certificate generateCertificate(SubjectData subjectData, ArrayList<ExtensionDTO> extensionDTOS) {
         try {
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
 
@@ -147,6 +153,10 @@ public class CertificateService {
                     subjectData.getX500name(),
                     subjectData.getPublicKey());
 
+            //ekstenzije
+            addExtensions(certGen, extensionDTOS, subjectData);
+
+            //potpisivanje
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
             JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
@@ -165,8 +175,57 @@ public class CertificateService {
             return generatedCertificate;
         } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException | CertificateException | ParseException e) {
             e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertIOException e) {
+            e.printStackTrace();
         }
         return null;
+    }
+
+    private void addExtensions(X509v3CertificateBuilder certGen, ArrayList<ExtensionDTO> extensionDTOS, SubjectData subjectData) throws NoSuchAlgorithmException, CertificateEncodingException, CertIOException {
+        JcaX509ExtensionUtils utils = new JcaX509ExtensionUtils();
+        for (ExtensionDTO extDTO :extensionDTOS) {
+            switch (extDTO.getType()){
+                case AUTHORITY_KEY_IDENTIFIER:{
+                    certGen.addExtension(Extension.authorityKeyIdentifier, extDTO.isCritical(),
+                        utils.createAuthorityKeyIdentifier((X509Certificate) getCertificateByAlias("antihackerman root")));
+                    break;
+                }
+                case BASIC_CONSTRAINTS:{
+                    certGen.addExtension(Extension.basicConstraints, extDTO.isCritical(), new BasicConstraints(false));
+                    break;
+                }
+                case KEY_USAGE:{
+                    certGen.addExtension(Extension.keyUsage, extDTO.isCritical(),
+                            new KeyUsage( KeyUsage.keyEncipherment | KeyUsage.digitalSignature));
+                    break;
+                }
+                case EXTENDED_KEY_USAGE:{
+                    KeyPurposeId[] keyPurposeIds = new KeyPurposeId[2];
+                    keyPurposeIds[0] = KeyPurposeId.id_kp_clientAuth;
+                    keyPurposeIds[1] = KeyPurposeId.id_kp_serverAuth;
+
+                    certGen.addExtension(Extension.extendedKeyUsage , extDTO.isCritical(),
+                            new ExtendedKeyUsage(keyPurposeIds));
+                    break;
+                }
+                case SUBJECT_ALTERNATIVE_NAME:{
+                    GeneralName altName = new GeneralName(GeneralName.dNSName, "name");
+                    GeneralNames subjectAltName = new GeneralNames(altName);
+                    certGen.addExtension(Extension.subjectAlternativeName, extDTO.isCritical(), subjectAltName);
+                    break;
+                }
+                case SUBJECT_KEY_IDENTIFIER:{
+                    byte[] subjectKeyIdentifier = utils
+                            .createSubjectKeyIdentifier(subjectData.getPublicKey()).getKeyIdentifier();
+
+                    certGen.addExtension(Extension.subjectKeyIdentifier, extDTO.isCritical(),
+                            new SubjectKeyIdentifier(subjectKeyIdentifier));
+                    break;
+                }
+            }
+        }
     }
 
 

@@ -2,6 +2,7 @@ package antihackerman.backendapp.controller;
 
 
 import antihackerman.backendapp.dto.CSRdto;
+import antihackerman.backendapp.dto.ExtensionDTO;
 import antihackerman.backendapp.model.CSR;
 import antihackerman.backendapp.model.SubjectData;
 import antihackerman.backendapp.service.CSRService;
@@ -84,7 +85,21 @@ public class CSRController {
     public ResponseEntity<String> approveCSR(@PathVariable String uniqueFilename){
 
         try {
-            csrService.approveCSR(uniqueFilename);
+            csrService.approveCSR(uniqueFilename, new ArrayList<ExtensionDTO>());
+            return new ResponseEntity<String>("success",HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("file does not exist",HttpStatus.NOT_FOUND);
+        }
+
+
+    }
+
+    @PostMapping("/approveCSRextensions/{uniqueFilename}")
+    public ResponseEntity<String> approveCSRExtensions(@PathVariable String uniqueFilename, @RequestBody ArrayList<ExtensionDTO> exceptiodDTOs){
+
+        try {
+            csrService.approveCSR(uniqueFilename, exceptiodDTOs);
             return new ResponseEntity<String>("success",HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();

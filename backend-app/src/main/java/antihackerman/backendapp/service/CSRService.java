@@ -1,6 +1,7 @@
 package antihackerman.backendapp.service;
 
 import antihackerman.backendapp.dto.CSRdto;
+import antihackerman.backendapp.dto.ExtensionDTO;
 import antihackerman.backendapp.model.CSR;
 import antihackerman.backendapp.model.Extension;
 import antihackerman.backendapp.model.SubjectData;
@@ -191,7 +192,7 @@ public class CSRService {
         Files.delete(Paths.get(path));
     }
 
-    public void approveCSR(String filename) throws Exception {
+    public void approveCSR(String filename, ArrayList<ExtensionDTO> extensionDTOS) throws Exception {
         String path = CSR_DIR_PATH + filename;
         if (!Files.exists(Paths.get(path))){
             throw new Exception("File does not exist.");
@@ -210,7 +211,7 @@ public class CSRService {
 
         SubjectData subjectData = new SubjectData(pubKey, privKey, csr.getSubject());
 
-        certificateService.generateCertificate(subjectData);
+        certificateService.generateCertificate(subjectData, extensionDTOS);
         Files.delete(Paths.get(path));
     }
 
