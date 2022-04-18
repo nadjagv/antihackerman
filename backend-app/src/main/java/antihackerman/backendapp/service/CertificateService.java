@@ -77,9 +77,11 @@ public class CertificateService {
     
     public boolean checkValidityForCertificate(String alias) {
     	keyStoreReader=new KeyStoreReader();
-    	Certificate cert=keyStoreReader.readCertificate("./keystore", "", alias);
+    	Certificate[] chain=keyStoreReader.getCertChain(alias,"./keystore", "");
     	try {
-			((X509Certificate)cert).checkValidity();
+    		for(Certificate c: chain) {
+    			((X509Certificate)c).checkValidity();
+    		}
 		} catch (CertificateExpiredException e) {
 			return false;
 		} catch (CertificateNotYetValidException e) {

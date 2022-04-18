@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.cert.CRLException;
 import java.security.cert.CRLReason;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
@@ -25,12 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import antihackerman.backendapp.pki.data.X509CRLEntryWrapper;
+import antihackerman.backendapp.pki.keystores.KeyStoreReader;
 import antihackerman.backendapp.util.PKIUtil;
 
 @Service
 public class CRLService {
 	
 	private PKIUtil pkiUtil=new PKIUtil();
+	private KeyStoreReader keyStoreReader;
 	
 	public void createCRL() {
 		
@@ -77,9 +80,16 @@ public class CRLService {
 	public boolean checkRevocation(BigInteger serialNumber) {
 		try {
 			X509CRL crl = pkiUtil.readCRLFile(new File("./src/main/resources/"+"CRL"));
-			if(crl.getRevokedCertificate(serialNumber)!=null) {
-				return true;
-			}
+			keyStoreReader=new KeyStoreReader();
+	    	String alias=keyStoreReader.getAliasFromSerial(serialNumber,"./keystore", "");
+	    	System.out.println("Alias: "+alias);
+	    	Certificate[] chain=keyStoreReader.getCertChain(alias,"./keystore", "");
+	    	for(Certificate c: chain) {
+	    		System.out.println(((X509Certificate)c).getSerialNumber());
+	    		if(crl.getRevokedCertificate(((X509Certificate)c).getSerialNumber())!=null) {
+					return true;
+				}
+	    	}
 		} catch (CRLException | CertificateException | IOException e1) {
 			e1.printStackTrace();
 		}

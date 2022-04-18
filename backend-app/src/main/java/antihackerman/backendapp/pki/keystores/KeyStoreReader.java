@@ -142,4 +142,42 @@ public class KeyStoreReader {
     	return null;
     	
     }
+    
+    public String getAliasFromSerial(BigInteger serial,String keyStoreFile, String keyStorePass) {
+    	try {
+    		KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+        	
+        	BufferedInputStream in = new BufferedInputStream(new FileInputStream("./src/main/resources/"+keyStoreFile));
+            ks.load(in, keyStorePass.toCharArray());
+        	
+        	Enumeration<String> enumeration = ks.aliases();
+            while(enumeration.hasMoreElements()) {
+                String alias = enumeration.nextElement();
+                Certificate certificate = ks.getCertificate(alias);
+                BigInteger serialFound=((X509Certificate)certificate).getSerialNumber();
+                if(serial.equals(serialFound)) {
+                	return alias;
+                }
+            }
+    	}catch(KeyStoreException | NoSuchProviderException | NoSuchAlgorithmException |
+                CertificateException | IOException e){
+    		e.printStackTrace();
+    	}
+    	return null;
+    }
+    
+    public Certificate[] getCertChain(String alias,String keyStoreFile, String keyStorePass) {
+    	try {
+    		KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+        	
+        	BufferedInputStream in = new BufferedInputStream(new FileInputStream("./src/main/resources/"+keyStoreFile));
+            ks.load(in, keyStorePass.toCharArray());
+        	
+        	return ks.getCertificateChain(alias);
+    	}catch(KeyStoreException | NoSuchProviderException | NoSuchAlgorithmException |
+                CertificateException | IOException e){
+    		e.printStackTrace();
+    	}
+    	return null;
+    }
 }
