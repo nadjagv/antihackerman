@@ -139,6 +139,7 @@ public class CertificateService {
             SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
             Date startDate = iso8601Formater.parse(start.toString());
             Date endDate = iso8601Formater.parse(start.plusYears(1).toString());
+
             X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuerData.getX500name(),
                     new BigInteger(32, new Random()),
                     startDate,
@@ -155,10 +156,11 @@ public class CertificateService {
 
             X509Certificate generatedCertificate =  certConverter.getCertificate(certHolder);
 
+            Certificate ROOT = getCertificateByAlias("antihackerman root");
             KeyStoreWriter keyStoreWriter = new KeyStoreWriter();
             keyStoreWriter.loadKeyStore(".\\src\\main\\resources\\keystore", keyPass.toCharArray());
             keyStoreWriter.write
-                    (subjectData.getX500name().getRDNs(BCStyle.CN)[0].getFirst().getValue().toString(), issuerData.getPrivateKey(), keyPass.toCharArray(), generatedCertificate);
+                    (subjectData.getX500name().getRDNs(BCStyle.CN)[0].getFirst().getValue().toString(), issuerData.getPrivateKey(), keyPass.toCharArray(), generatedCertificate, ROOT);
             keyStoreWriter.saveKeyStore(".\\src\\main\\resources\\keystore", keyPass.toCharArray());
             return generatedCertificate;
         } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException | CertificateException | ParseException e) {

@@ -101,10 +101,6 @@ public class CSRService {
         writeCSRToFileBase64Encoded(csr, CSR_DIR_PATH + uniqueFilename + ".csr");
         System.out.println(subjectData.getPrivateKey().getEncoded());
         KeyPairUtil.writeEncryptedPrivateKeyToFile(uniqueFilename, subjectData.getPrivateKey());
-//        KeyPairUtil.writeKeyFileEncoded(subjectData.getPrivateKey(), ".\\src\\main\\resources\\pk\\" + uniqueFilename + ".txt");
-//
-//        PrivateKey privkey = KeyPairUtil.getEncryptedPrivateKeyFromFile(uniqueFilename);
-//        System.out.println(privkey.getEncoded());
 
         return csr;
     }
@@ -208,15 +204,14 @@ public class CSRService {
         RSAKeyParameters rsa = (RSAKeyParameters) PublicKeyFactory.createKey(pkInfo);
         RSAPublicKeySpec rsaSpec = new RSAPublicKeySpec(rsa.getModulus(), rsa.getExponent());
         KeyFactory kf = KeyFactory.getInstance("RSA");
-        PublicKey rsaPub = kf.generatePublic(rsaSpec);
+        PublicKey pubKey = kf.generatePublic(rsaSpec);
 
-        KeyPair kp = KeyPairUtil.generateKeyPair();
+        PrivateKey privKey = KeyPairUtil.getEncryptedPrivateKeyFromFile(filename);
 
-
-
-        SubjectData subjectData = new SubjectData(rsaPub, kp.getPrivate(), csr.getSubject());
+        SubjectData subjectData = new SubjectData(pubKey, privKey, csr.getSubject());
 
         certificateService.generateCertificate(subjectData);
+        Files.delete(Paths.get(path));
     }
 
     public String generateUniqueId(){

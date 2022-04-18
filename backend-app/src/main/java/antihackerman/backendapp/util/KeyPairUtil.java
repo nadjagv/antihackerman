@@ -14,6 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 public class KeyPairUtil {
@@ -34,71 +35,6 @@ public class KeyPairUtil {
         return null;
     }
 
-    public static void writeKeyFileEncoded(PrivateKey pk, String fileName) throws Exception {
-        Key aesKey = new SecretKeySpec(encryptKey.getBytes(), "AES");
-        Cipher cipher = null;
-        try {
-            cipher = Cipher.getInstance("AES");
-
-            cipher.init(Cipher.ENCRYPT_MODE, aesKey);
-            byte[] encrypted = cipher.doFinal(pk.getEncoded());
-            PemObject pemObject = new PemObject("PRIVATE KEY", encrypted);
-            FileWriter fw = new FileWriter(fileName);
-            PemWriter pemWriter = new PEMWriter(fw);
-            pemWriter.writeObject(pemObject);
-            pemWriter.close();
-            fw.close();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public static PrivateKey getStoredPrivateKey(String uniqueFilename) throws Exception {
-        File file = new File(".\\src\\main\\resources\\pk\\" + uniqueFilename + ".txt");
-        String fileContent = FileUtil.readFile(file);
-
-        System.out.println(fileContent);
-        fileContent = fileContent.replace("-----BEGIN CERTIFICATE REQUEST-----", "");
-
-        fileContent = fileContent.replace("-----END CERTIFICATE REQUEST-----", "");
-
-        fileContent = fileContent.trim();
-        System.out.println(fileContent);
-
-        byte [] encoded = Base64.decodeBase64(fileContent);
-
-        // extract the private key
-
-        Key aesKey = new SecretKeySpec(encryptKey.getBytes(), "AES");
-        Cipher cipher = null;
-        try {
-            cipher = Cipher.getInstance("AES");
-
-            cipher.init(Cipher.DECRYPT_MODE, aesKey);
-            byte[] decrypted = cipher.doFinal(encoded);
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decrypted);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            PrivateKey privKey = kf.generatePrivate(keySpec);
-            System.out.println(privKey.getEncoded());
-
-            return privKey;
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return null;
-
-    }
 
     public static void writeEncryptedPrivateKeyToFile(String uniqueFilename, PrivateKey pk){
         Key aesKey = new SecretKeySpec(encryptKey.getBytes(), "AES");
@@ -110,7 +46,9 @@ public class KeyPairUtil {
             byte[] encrypted = cipher.doFinal(pk.getEncoded());
 
             FileWriter pw = new FileWriter(PK_FILE_PATH,true);
-            pw.append(uniqueFilename + ","+encrypted+"\n");
+            String s = java.util.Base64.getEncoder().encodeToString(encrypted);
+
+            pw.append(uniqueFilename + ","+s+"\n");
             pw.close();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -142,12 +80,13 @@ public class KeyPairUtil {
                 String[] values = line.split(",");
                 if (values[0].contentEquals(uniqueFilename)){
                     String encryptedStr = values[1];
-                    byte[] decrypted = cipher.doFinal(encryptedStr.getBytes(StandardCharsets.UTF_8));
-                    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decrypted);
+                    byte[] dekriptBase64 = java.util.Base64.getDecoder().decode(encryptedStr.trim());
+                    byte[] decrypted = cipher.doFinal(dekriptBase64);
+
                     KeyFactory kf = KeyFactory.getInstance("RSA");
-                    PrivateKey privKey = kf.generatePrivate(keySpec);
-                    System.out.println(privKey.getEncoded());
-                    return privKey;
+                    PrivateKey privateKey = kf.generatePrivate(new PKCS8EncodedKeySpec(decrypted));
+                    System.out.println(privateKey.getEncoded());
+                    return privateKey;
 
                 }
             }
@@ -160,4 +99,8 @@ public class KeyPairUtil {
         }
         return null;
     }
+
+
+
+
 }
