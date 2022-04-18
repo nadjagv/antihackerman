@@ -3,12 +3,10 @@ package antihackerman.backendapp.service;
 import antihackerman.backendapp.dto.CSRdto;
 import antihackerman.backendapp.dto.ExtensionDTO;
 import antihackerman.backendapp.model.CSR;
-import antihackerman.backendapp.model.Extension;
 import antihackerman.backendapp.model.SubjectData;
 import antihackerman.backendapp.util.FileUtil;
 import antihackerman.backendapp.util.KeyPairUtil;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -19,29 +17,22 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.ContentVerifierProvider;
-import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
-import org.bouncycastle.pkcs.PKCSException;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.*;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -83,16 +74,10 @@ public class CSRService {
         fw.close();
     }
 
-    public PKCS10CertificationRequest generateCSR(SubjectData subjectData, ArrayList<Extension> extensions) throws Exception {
+    public PKCS10CertificationRequest generateCSR(SubjectData subjectData) throws Exception {
 
         PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(subjectData.getX500name(), subjectData.getPublicKey());
 
-        for(Extension extension : extensions) {
-            ExtensionsGenerator extGen = new ExtensionsGenerator();
-            extGen.addExtension(extension.getOid(), extension.isCritical(), extension.getValue());
-            p10Builder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extGen.generate());
-
-        }
 
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
         contentSignerBuilder = contentSignerBuilder.setProvider("BC");
@@ -100,7 +85,7 @@ public class CSRService {
         PKCS10CertificationRequest csr = p10Builder.build(contentSigner);
         String uniqueFilename = generateUniqueId();
         writeCSRToFileBase64Encoded(csr, CSR_DIR_PATH + uniqueFilename + ".csr");
-        System.out.println(subjectData.getPrivateKey().getEncoded());
+
         KeyPairUtil.writeEncryptedPrivateKeyToFile(uniqueFilename, subjectData.getPrivateKey());
 
         return csr;
@@ -172,13 +157,12 @@ public class CSRService {
     }
 
     private PKCS10CertificationRequest getPKSCFromContent(String fileContent) throws IOException {
-        System.out.println(fileContent);
+
         fileContent = fileContent.replace("-----BEGIN CERTIFICATE REQUEST-----", "");
 
         fileContent = fileContent.replace("-----END CERTIFICATE REQUEST-----", "");
 
         fileContent = fileContent.trim();
-        System.out.println(fileContent);
         PemObject pemObject = new PemObject("CERTIFICATE REQUEST", Base64.decodeBase64(fileContent));
 
         return new PKCS10CertificationRequest(pemObject.getContent());

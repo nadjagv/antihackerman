@@ -17,11 +17,6 @@ public class BackendAppApplication {
 
 	public static void main(String[] args){
 		Security.addProvider(new BouncyCastleProvider());
-		CertificateService cs = new CertificateService();
-		X509Certificate cert = cs.createNewSelfSignedCertificate();
-		System.out.println(cert);
-		
-		
 
 		SpringApplication.run(BackendAppApplication.class, args);
 	}

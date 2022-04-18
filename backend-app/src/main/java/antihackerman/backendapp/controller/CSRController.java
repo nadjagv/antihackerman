@@ -35,7 +35,7 @@ public class CSRController {
     @PostMapping(path = "/generateCSR")
     public ResponseEntity generateCSR(@RequestBody CSRdto dto) throws Exception {
         SubjectData subjectData = csrService.generateSubjectDataCSR(dto);
-        csrService.generateCSR(subjectData, new ArrayList<>());
+        csrService.generateCSR(subjectData);
         return ResponseEntity.ok().build();
     }
 
