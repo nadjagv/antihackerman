@@ -8,11 +8,30 @@ import {
   TableCell,
   TableBody,
   Button,
+  Modal,
+  Box,
+  Typography,
+  Autocomplete,
+  Checkbox,
+  TextField,
 } from "@mui/material";
 import axios from "axios";
+import modalStyle from "../Constants/Styles";
+import { type } from "@testing-library/user-event/dist/type";
 
+const extensions = [
+  "AUTHORITY_KEY_IDENTIFIER",
+  "BASIC_CONSTRAINTS",
+  "KEY_USAGE",
+  "SUBJECT_KEY_IDENTIFIER",
+  "EXTENDED_KEY_USAGE",
+  "SUBJECT_ALTERNATIVE_NAME",
+];
 function CSRs() {
   const [csrs, setCsrs] = useState([]);
+  const [signModal, setSignModal] = useState(false);
+  const [csrToSign, setCsrToSign] = useState("");
+  const [selectedExtendsions, setSelectedExtendsions] = useState([]);
   useEffect(() => {
     axios.get(environment.baseURL + "csr").then((response) => {
       setCsrs(response.data);
@@ -22,15 +41,23 @@ function CSRs() {
   const rejectCSR = (filename) => {
     axios
       .get(environment.baseURL + "csr/rejectCSR/" + filename)
-      .then((reponse) => {
+      .then((response) => {
         console.log("Success");
       });
   };
-  const acceptCSR = (filename) => {
+  const acceptCSR = () => {
+    let extensions = [];
+    selectedExtendsions.forEach((element) =>
+      extensions.push({ type: element, citical: false })
+    );
     axios
-      .get(environment.baseURL + "csr/approveCSR/" + filename)
-      .then((reponse) => {
+      .post(
+        environment.baseURL + "csr/approveCSRextensions/" + csrToSign,
+        extensions
+      )
+      .then((response) => {
         console.log("Success");
+        setSignModal(false);
       });
   };
   return (
@@ -75,7 +102,8 @@ function CSRs() {
                   </Button>
                   <Button
                     onClick={(e) => {
-                      acceptCSR(csr.uniqueFilename);
+                      setCsrToSign(csr.uniqueFilename);
+                      setSignModal(true);
                     }}
                     variant="outlined"
                     color="success"
@@ -88,6 +116,54 @@ function CSRs() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Modal
+        open={signModal}
+        onClose={() => {
+          setSignModal(false);
+        }}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Certificate details
+          </Typography>
+          <div
+            id="modal-modal-description"
+            sx={{ mt: 2 }}
+            className="modal-text"
+          >
+            <Autocomplete
+              multiple
+              id="checkboxes-tags-demo"
+              value={selectedExtendsions}
+              options={extensions}
+              disableCloseOnSelect
+              onChange={(e, newValue) => {
+                setSelectedExtendsions(newValue);
+              }}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                  <Checkbox style={{ marginRight: 8 }} checked={selected} />
+                  {option}
+                </li>
+              )}
+              style={{ width: 500 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Checkboxes"
+                  placeholder="Extensions"
+                />
+              )}
+            />
+            <Button onClick={acceptCSR} variant="contained" color="success">
+              Approve CSR
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 }
