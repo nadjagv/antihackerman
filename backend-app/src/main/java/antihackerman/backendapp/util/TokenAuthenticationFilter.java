@@ -2,6 +2,7 @@ package antihackerman.backendapp.util;
 
 import java.io.IOException;
 
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.crypto.DefaultJwtSignatureValidator;
 
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	
@@ -37,6 +40,18 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		try {
 	
 			if (authToken != null) {
+				String[] chunks = authToken.split("\\.");
+				String tokenWithoutSignature = chunks[0] + "." + chunks[1];
+				String signature = chunks[2];
+				
+				SignatureAlgorithm sa = tokenUtils.SIGNATURE_ALGORITHM;
+				SecretKeySpec secretKeySpec = new SecretKeySpec(tokenUtils.SECRET.getBytes(), sa.getJcaName());
+				DefaultJwtSignatureValidator validator = new DefaultJwtSignatureValidator(sa,secretKeySpec);
+				
+				if (!validator.isValid(tokenWithoutSignature, signature)) {
+				    throw new Exception("Could not verify JWT token integrity!");
+				}
+				
 				username = tokenUtils.getUsernameFromToken(authToken);
 				if (username != null) {
 					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -50,6 +65,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 			
 		} catch (ExpiredJwtException ex) {
 			LOGGER.debug("Token expired!");
+		} catch (Exception e) {
+			e.printStackTrace();
 		} 
 		chain.doFilter(request, response);
 	}

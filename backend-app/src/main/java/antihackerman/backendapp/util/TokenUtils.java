@@ -1,5 +1,6 @@
 package antihackerman.backendapp.util;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,14 +32,16 @@ public class TokenUtils {
 	
 	private static final String AUDIENCE_WEB = "web";
 
-	private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
+	public SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 	
 	public String generateToken(User user) {
+		Claims claims = Jwts.claims().setSubject(user.getUsername());
+		claims.put("email", user.getEmail());
+	    claims.put("roles", Arrays.asList(user.getRoles()));
+		
 		return Jwts.builder()
+				.setClaims(claims)
 				.setIssuer(APP_NAME)
-				.setSubject(user.getUsername())
-				.claim("roles", user.getRoles())
-				.claim("email", user.getEmail())
 				.setAudience(generateAudience())
 				.setIssuedAt(new Date())
 				.setExpiration(generateExpirationDate())
