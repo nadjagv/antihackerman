@@ -10,11 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import antihackerman.backendapp.service.BlacklistService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.DefaultJwtSignatureValidator;
@@ -24,6 +26,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	private TokenUtils tokenUtils;
 
 	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	private BlacklistService blacklistService;
 	
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
@@ -44,7 +49,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 		try {
 	
-			if (authToken != null) {
+			if (authToken != null && blacklistService.findByJwt(authToken)==null) {
 				username = tokenUtils.getUsernameFromToken(authToken);
 				if (username != null) {
 					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
