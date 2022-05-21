@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.security.core.GrantedAuthority;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +32,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Privilege {
+public class Privilege implements GrantedAuthority {
 	
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -42,5 +43,10 @@ public class Privilege {
 	
 	@Column(name = "deleted", nullable = false)
 	private boolean deleted;
+
+	@Override
+	public String getAuthority() {
+		return name;
+	}
 
 }

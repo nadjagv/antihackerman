@@ -2,7 +2,9 @@ package antihackerman.backendapp.model;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -71,7 +73,11 @@ public class User implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.roles;
+		List<GrantedAuthority> permissions = new ArrayList<>(20);
+        for (Role role : this.roles) {
+            permissions.addAll(role.getPrivileges());
+        }
+        return permissions;
 	}
 
 	@Override
@@ -83,6 +89,12 @@ public class User implements UserDetails{
 	public String getUsername() {
 		return this.username;
 	}
+	
+	public void setPassword(String password) {
+        Timestamp now = new Timestamp(new Date().getTime());
+        this.setLastPasswordResetDate(now);
+        this.password = password;
+    }
 
 	@Override
 	public boolean isAccountNonExpired() {

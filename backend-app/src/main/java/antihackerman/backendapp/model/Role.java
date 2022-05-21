@@ -2,6 +2,7 @@ package antihackerman.backendapp.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,6 +61,10 @@ public class Role implements GrantedAuthority {
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private List<Privilege> privileges;
+	
+	@JsonIgnore
+    @ManyToMany(mappedBy = "roles" , fetch = FetchType.LAZY)
+    private Set<User> users;
 	
 	@Override
 	public String getAuthority() {
