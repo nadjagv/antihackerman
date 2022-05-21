@@ -31,31 +31,24 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		this.tokenUtils = tokenHelper;
 		this.userDetailsService = userDetailsService;
 	}
-
+	
 	@Override
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+
+
 		String username;
+		
 		String authToken = tokenUtils.getToken(request);
+		String fingerprint = tokenUtils.getFingerprintFromCookie(request);
+
 		try {
 	
 			if (authToken != null) {
-				String[] chunks = authToken.split("\\.");
-				String tokenWithoutSignature = chunks[0] + "." + chunks[1];
-				String signature = chunks[2];
-				
-				SignatureAlgorithm sa = tokenUtils.SIGNATURE_ALGORITHM;
-				SecretKeySpec secretKeySpec = new SecretKeySpec(tokenUtils.SECRET.getBytes(), sa.getJcaName());
-				DefaultJwtSignatureValidator validator = new DefaultJwtSignatureValidator(sa,secretKeySpec);
-				
-				if (!validator.isValid(tokenWithoutSignature, signature)) {
-				    throw new Exception("Could not verify JWT token integrity!");
-				}
-				
 				username = tokenUtils.getUsernameFromToken(authToken);
 				if (username != null) {
 					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-					if (tokenUtils.validateToken(authToken, userDetails)) {
+					if (tokenUtils.validateToken(authToken, userDetails, fingerprint)) {
 						TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
 						authentication.setToken(authToken);
 						SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -65,9 +58,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 			
 		} catch (ExpiredJwtException ex) {
 			LOGGER.debug("Token expired!");
-		} catch (Exception e) {
-			e.printStackTrace();
 		} 
+		
 		chain.doFilter(request, response);
 	}
 

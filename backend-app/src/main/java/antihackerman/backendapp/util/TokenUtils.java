@@ -1,9 +1,18 @@
 package antihackerman.backendapp.util;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,9 +39,14 @@ public class TokenUtils {
 	@Value("Authorization")
 	private String AUTH_HEADER;
 	
+	@Value("Cookie")
+    private String COOKIE_HEADER;
+	
 	private static final String AUDIENCE_WEB = "web";
 
 	public SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
+	
+	private final SecureRandom secureRandom = new SecureRandom();
 	
 	public String generateToken(User user) {
 		Claims claims = Jwts.claims().setSubject(user.getUsername());
@@ -47,6 +61,23 @@ public class TokenUtils {
 				.setExpiration(generateExpirationDate())
 				.signWith(SIGNATURE_ALGORITHM, SECRET).compact();
 	}
+	
+	public String generateFingerprint() {
+        byte[] randomFgp = new byte[50];
+        this.secureRandom.nextBytes(randomFgp);
+        return DatatypeConverter.printHexBinary(randomFgp);
+    }
+
+    private String generateFingerprintHash(String userFingerprint) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] userFingerprintDigest = digest.digest(userFingerprint.getBytes(StandardCharsets.UTF_8));
+            return DatatypeConverter.printHexBinary(userFingerprintDigest);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 	
 	private String generateAudience() {
 		return AUDIENCE_WEB;
@@ -65,6 +96,19 @@ public class TokenUtils {
 
 		return null;
 	}
+	
+	public String getFingerprintFromCookie(HttpServletRequest request) {
+        String userFingerprint = null;
+        if (request.getCookies() != null && request.getCookies().length > 0) {
+            List<Cookie> cookies = Arrays.stream(request.getCookies()).collect(Collectors.toList());
+            Optional<Cookie> cookie = cookies.stream().filter(c -> "Fingerprint".equals(c.getName())).findFirst();
+
+            if (cookie.isPresent()) {
+                userFingerprint = cookie.get().getValue();
+            }
+        }
+        return userFingerprint;
+    }
 	
 	public String getUsernameFromToken(String token) {
 		String username;
@@ -120,6 +164,50 @@ public class TokenUtils {
 		
 		return expiration;
 	}
+	
+	private String getFingerprintFromToken(String token) {
+        String fingerprint;
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
+            fingerprint = claims.get("userFingerprint", String.class);
+        } catch (ExpiredJwtException ex) {
+            throw ex;
+        } catch (Exception e) {
+            fingerprint = null;
+        }
+        return fingerprint;
+    }
+	
+	private String getIssuerFromToken(String token) {
+        String issuer;
+
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
+            issuer = claims.getIssuer();
+        } catch (ExpiredJwtException ex) {
+            throw ex;
+        } catch (Exception e) {
+            issuer = null;
+        }
+        return issuer;
+    }
+
+
+    private String getAlgorithmFromToken(String token) {
+        String algorithm;
+        try {
+            algorithm = Jwts.parser()
+                    .setSigningKey(SECRET)
+                    .parseClaimsJws(token)
+                    .getHeader()
+                    .getAlgorithm();
+        } catch (ExpiredJwtException ex) {
+            throw ex;
+        } catch (Exception e) {
+            algorithm = null;
+        }
+        return algorithm;
+    }
 
 	private Claims getAllClaimsFromToken(String token) {
 		Claims claims;
@@ -136,16 +224,30 @@ public class TokenUtils {
 		
 		return claims;
 	}
+	
+	public Boolean validateToken(String token, UserDetails userDetails, String fingerprint) {
+        User user = (User) userDetails;
+        final String username = getUsernameFromToken(token);
+        final Date created = getIssuedAtDateFromToken(token);
 
-	public Boolean validateToken(String token, UserDetails userDetails) {
-		User user = (User) userDetails;
-		final String username = getUsernameFromToken(token);
-		final Date created = getIssuedAtDateFromToken(token);
-		
-		return (username != null 
-			&& username.equals(userDetails.getUsername()) 
-			&& !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())); 
-	}
+        boolean isUsernameValid = username != null 
+                && username.equals(userDetails.getUsername())
+                && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate());
+
+        boolean isFingerprintValid = false;
+        boolean isAlgorithmValid = false;
+        if (fingerprint != null) {
+            isFingerprintValid = validateTokenFingerprint(fingerprint, token);
+            isAlgorithmValid = SIGNATURE_ALGORITHM.getValue().equals(getAlgorithmFromToken(token));
+        }
+        return isUsernameValid && isFingerprintValid && isAlgorithmValid;
+    }
+	
+	private boolean validateTokenFingerprint(String fingerprint, String token) {
+        String fingerprintHash = generateFingerprintHash(fingerprint);
+        String fingerprintFromToken = getFingerprintFromToken(token);
+        return fingerprintFromToken.equals(fingerprintHash);
+    }
 	
 	private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
 		return (lastPasswordReset != null && created.before(lastPasswordReset));
