@@ -48,10 +48,12 @@ public class TokenUtils {
 	
 	private final SecureRandom secureRandom = new SecureRandom();
 	
-	public String generateToken(User user) {
+	public String generateToken(User user, String fingerprint) {
+		String fingerprintHash = generateFingerprintHash(fingerprint);
 		Claims claims = Jwts.claims().setSubject(user.getUsername());
 		claims.put("email", user.getEmail());
 	    claims.put("roles", Arrays.asList(user.getRoles()));
+	    claims.put("userFingerprint", fingerprintHash);
 		
 		return Jwts.builder()
 				.setClaims(claims)
