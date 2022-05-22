@@ -31,7 +31,7 @@ public class Group {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "groups_owning", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "groupsOwning", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<User> owners=new ArrayList<User>();
 
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

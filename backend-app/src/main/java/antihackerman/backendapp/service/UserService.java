@@ -78,6 +78,13 @@ public class UserService {
         if(found==null){
             throw new NotFoundException("User with id "+id+" does not exist.");
         }
+
+        for (Group g : found.getGroupsOwning()){
+            g.getOwners().remove(found);
+            if (g.getOwners().isEmpty()){
+                groupRepository.delete(g);
+            }
+        }
         userRep.delete(found);
     }
 
@@ -136,8 +143,8 @@ public class UserService {
                 .username(registrationDTO.getUsername())
                 .email(registrationDTO.getEmail())
                 .password(registrationDTO.getPassword())
-                .groups_owning(groups_owning)
-                .realestates_tenanting(realestates_tenanting)
+                .groupsOwning(groups_owning)
+                .realestatesTenanting(realestates_tenanting)
                 .roles(roles)
                 .deleted(false)
                 .lastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now()))

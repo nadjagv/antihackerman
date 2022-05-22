@@ -22,59 +22,86 @@ public class GroupService {
     }
 
     public Group getGroupById (Integer groupId) throws NotFoundException {
-        Group result = groupRep.getById(groupId);
-        if(result==null){
+        try{
+            Group group = groupRep.getById(groupId);
+            if(group==null){
+                throw new NotFoundException("Group with id "+groupId+" does not exist.");
+            }
+            return group;
+        }catch (Exception e){
+            e.printStackTrace();
             throw new NotFoundException("Group with id "+groupId+" does not exist.");
         }
-        return result;
     }
 
     public List<User> getOwnersForGroup (Integer groupId) throws NotFoundException {
-        Group group = groupRep.getById(groupId);
-        if(group==null){
+        try{
+            Group group = groupRep.getById(groupId);
+            if(group==null){
+                throw new NotFoundException("Group with id "+groupId+" does not exist.");
+            }
+            return group.getOwners();
+        }catch (Exception e){
+            e.printStackTrace();
             throw new NotFoundException("Group with id "+groupId+" does not exist.");
         }
-        return group.getOwners();
     }
 
     public List<RealEstate> getRealEstatesForGroup (Integer groupId) throws NotFoundException {
-        Group group = groupRep.getById(groupId);
-        if(group==null){
+        try{
+            Group group = groupRep.getById(groupId);
+            if(group==null){
+                throw new NotFoundException("Group with id "+groupId+" does not exist.");
+            }
+            return group.getRealEstates();
+        }catch (Exception e){
+            e.printStackTrace();
             throw new NotFoundException("Group with id "+groupId+" does not exist.");
         }
-        return group.getRealEstates();
+
     }
 
     public List<User> getAllUsersForGroup (Integer groupId) throws NotFoundException {
-        Group group = groupRep.getById(groupId);
-        if(group==null){
+        List<User> result = new ArrayList<>();
+        try{
+            Group group = groupRep.getById(groupId);
+            if(group==null){
+                throw new NotFoundException("Group with id "+groupId+" does not exist.");
+            }
+
+            result.addAll(group.getOwners());
+
+            group.getRealEstates().stream().forEach(realEstate -> {
+                result.addAll(realEstate.getTenants());
+            });
+
+            return result.stream().distinct().collect(Collectors.toList());
+        }catch (Exception e){
+            e.printStackTrace();
             throw new NotFoundException("Group with id "+groupId+" does not exist.");
         }
 
-        List<User> result = new ArrayList<>();
-        result.addAll(group.getOwners());
-//        for (RealEstate realEstate: group.getRealEstates()) {
-//            result.addAll(realEstate.getTenants());
-//        }
 
-        group.getRealEstates().stream().forEach(realEstate -> {
-            result.addAll(realEstate.getTenants());
-        });
-
-        return result.stream().distinct().collect(Collectors.toList());
     }
 
     public List<User> getTenantsForGroup (Integer groupId) throws NotFoundException {
-        Group group = groupRep.getById(groupId);
-        if(group==null){
+        List<User> result = new ArrayList<>();
+        try{
+            Group group = groupRep.getById(groupId);
+            if(group==null){
+                throw new NotFoundException("Group with id "+groupId+" does not exist.");
+            }
+
+            group.getRealEstates().stream().forEach(realEstate -> {
+                result.addAll(realEstate.getTenants());
+            });
+
+            return result.stream().distinct().collect(Collectors.toList());
+        }catch (Exception e){
+            e.printStackTrace();
             throw new NotFoundException("Group with id "+groupId+" does not exist.");
         }
 
-        List<User> result = new ArrayList<>();
-        group.getRealEstates().stream().forEach(realEstate -> {
-            result.addAll(realEstate.getTenants());
-        });
 
-        return result.stream().distinct().collect(Collectors.toList());
     }
 }

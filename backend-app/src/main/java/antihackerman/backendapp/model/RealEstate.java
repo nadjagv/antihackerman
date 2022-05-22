@@ -38,7 +38,7 @@ public class RealEstate {
     @ManyToOne(fetch = FetchType.EAGER)
     private Group group;
 
-    @ManyToMany(mappedBy = "realestates_tenanting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "realestatesTenanting", fetch = FetchType.LAZY)
     private List<User> tenants=new ArrayList<User>();
 
 }
