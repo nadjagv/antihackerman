@@ -48,7 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth
-			.userDetailsService(userService); 
+			.userDetailsService(userService);
 	}
 	
 	@Override
@@ -63,6 +63,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.cors().and()
 			.addFilterBefore(new TokenAuthenticationFilter(tokenUtils, userService), BasicAuthenticationFilter.class);
 		http.csrf().disable();
+		
+		http
+		.headers()
+		.xssProtection()
+		.and()
+		.contentSecurityPolicy("script-src 'self'");
 	}
 	
 	@Override

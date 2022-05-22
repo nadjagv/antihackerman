@@ -1,18 +1,19 @@
 package antihackerman.backendapp.model;
 
-import java.util.Collection;
+import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.security.core.GrantedAuthority;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,32 +22,33 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="privileges")
+@Table(name = "jwt-blacklist")
+@Inheritance(strategy=InheritanceType.JOINED)
 @SQLDelete(sql
-        = "UPDATE privileges "
-        + "SET deleted = true "
+        = "UPDATE jwt-blacklist "
+        + "SET obrisan = true "
         + "WHERE id = ?")
-@Where(clause = "deleted = false")
+@Where(clause = "obrisan = false")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Privilege implements GrantedAuthority {
+public class BlacklistedJWT {
 	
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "name", nullable = false,unique = true)
-    private String name;
 	
-	@Column(name = "deleted", nullable = false)
-	private boolean deleted;
-
-	@Override
-	public String getAuthority() {
-		return name;
+	@Column(name = "obrisan", nullable = false)
+    private boolean obrisan;
+	
+	@Column(name = "username", nullable = false)
+	private String jwt;
+	
+	public BlacklistedJWT(String jwt) {
+		this.jwt=jwt;
+		this.obrisan=false;
 	}
 
 }
