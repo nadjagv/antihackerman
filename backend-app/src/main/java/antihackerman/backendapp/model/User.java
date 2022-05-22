@@ -7,18 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -36,9 +25,9 @@ import lombok.Setter;
 @Inheritance(strategy=InheritanceType.JOINED)
 @SQLDelete(sql
         = "UPDATE users "
-        + "SET obrisan = true "
+        + "SET deleted = true "
         + "WHERE id = ?")
-@Where(clause = "obrisan = false")
+@Where(clause = "deleted = false")
 @Getter
 @Setter
 @Builder
@@ -50,8 +39,8 @@ public class User implements UserDetails{
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
 	
-	@Column(name = "obrisan", nullable = false)
-    private boolean obrisan;
+	@Column(name = "deleted", nullable = false)
+    private boolean deleted;
     
     @Column(name = "username", nullable = false,unique = true)
 	private String username;
@@ -61,6 +50,18 @@ public class User implements UserDetails{
 	
 	@Column(name = "password", nullable = false)
 	private String password;
+
+	@ManyToMany()
+	@JoinTable(name = "users_groups_owning",
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"))
+	private List<Group> groups_owning=new ArrayList<Group>();
+
+	@ManyToMany()
+	@JoinTable(name = "users_realestates_tenanting",
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "realestate_id", referencedColumnName = "id"))
+	private List<RealEstate> realestates_tenanting=new ArrayList<RealEstate>();
 	
 	@Column(name = "last_password_reset_date")
     private Timestamp lastPasswordResetDate; 
@@ -69,7 +70,7 @@ public class User implements UserDetails{
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private List<Role> roles=new ArrayList<Role>();;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -62,8 +62,8 @@ public class Role implements GrantedAuthority {
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private List<Privilege> privileges;
 	
-	@JsonIgnore
-    @ManyToMany(mappedBy = "roles" , fetch = FetchType.LAZY)
+	//@JsonIgnore
+    @ManyToMany(mappedBy = "roles" , fetch = FetchType.EAGER)
     private Set<User> users;
 	
 	@Override
