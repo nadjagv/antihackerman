@@ -1,9 +1,24 @@
 import { Grid, Paper, TextField, Button } from "@mui/material";
+import axios from "axios";
 import { useState } from "react";
+import environment from "../Constants/Environment";
+import AuthService from "../Services/AuthService";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  let loginDetails = {
+    username: username,
+    password: password,
+  };
+  const handleLogin = () => {
+    axios
+      .post(environment.baseURL + "auth/login", loginDetails)
+      .then((response) => {
+        AuthService.setUser(response.data);
+      });
+  };
 
   const paperStyle = {
     padding: 20,
@@ -24,12 +39,18 @@ function Login() {
           placeholder="Enter username"
           fullWidth
           required
+          onChange={(e) => {
+            setUsername(e.target.value);
+          }}
         ></TextField>
         <TextField
           margin="normal"
           label="Password"
           placeholder="Enter password"
           type="password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
           fullWidth
           required
         ></TextField>
@@ -39,6 +60,9 @@ function Login() {
           variant="contained"
           style={btnstyle}
           fullWidth
+          onClick={() => {
+            handleLogin();
+          }}
         >
           Sign in
         </Button>

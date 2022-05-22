@@ -4,9 +4,13 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import axios from "axios";
+import AuthService from "./Services/AuthService";
 
 axios.interceptors.request.use((request) => {
-  request.headers.authenticationToken = "pjotarski token";
+  let user = AuthService.getUser();
+  if (user) {
+    request.headers.Authorization = "Bearer " + user.accessToken;
+  }
   console.log(request);
   return request;
 });

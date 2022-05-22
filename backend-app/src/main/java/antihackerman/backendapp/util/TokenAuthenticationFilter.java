@@ -49,7 +49,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 		try {
 	
-			if (authToken != null && blacklistService.findByJwt(authToken)==null) {
+			if (authToken != null ) {
 				username = tokenUtils.getUsernameFromToken(authToken);
 				if (username != null) {
 					UserDetails userDetails = userDetailsService.loadUserByUsername(username);

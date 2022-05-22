@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "jwt-blacklist")
+@Table(name = "jwt_blacklist")
 @Inheritance(strategy=InheritanceType.JOINED)
 @SQLDelete(sql
-        = "UPDATE jwt-blacklist "
+        = "UPDATE jwt_blacklist "
         + "SET obrisan = true "
         + "WHERE id = ?")
 @Where(clause = "obrisan = false")
