@@ -43,7 +43,7 @@ public class BlacklistedJWT {
 	@Column(name = "obrisan", nullable = false)
     private boolean obrisan;
 	
-	@Column(name = "username", nullable = false)
+	@Column(name = "jwt", nullable = false,columnDefinition="TEXT")
 	private String jwt;
 	
 	public BlacklistedJWT(String jwt) {

@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -55,14 +56,19 @@ public class AuthenticationController {
         String cookie = "Fingerprint=" + fingerprint + "; HttpOnly; Path=/";
         HttpHeaders headers = new HttpHeaders();
         headers.add("Set-Cookie", cookie);
+        
+        ArrayList<String> roles=new ArrayList<String>();
+        for(Role r: user.getRoles()) {
+        	roles.add(r.getRole());
+        }
 
-		return ResponseEntity.ok().headers(headers).body(new UserTokenState(jwt, expiresIn));
+		return ResponseEntity.ok().headers(headers).body(new UserTokenState(jwt, user.getUsername(), expiresIn, roles));
 	}
 	
 	@PostMapping("/logout")
 	public ResponseEntity<Object> logout(@RequestHeader (name="Authorization") String token){
-		System.out.println(token);
-		this.blacklistService.save(token);
+		System.out.println(token.substring(7));
+		this.blacklistService.save(token.substring(7));
 		return new ResponseEntity<Object>(null,HttpStatus.OK);
 	}
 

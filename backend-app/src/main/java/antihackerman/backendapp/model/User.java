@@ -51,13 +51,13 @@ public class User implements UserDetails{
 	@Column(name = "password", nullable = false)
 	private String password;
 
-	@ManyToMany()
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "users_groups_owning",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"))
 	private List<Group> groupsOwning =new ArrayList<Group>();
 
-	@ManyToMany()
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "users_realestates_tenanting",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "realestate_id", referencedColumnName = "id"))
@@ -70,7 +70,7 @@ public class User implements UserDetails{
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles=new ArrayList<Role>();;
+    private List<Role> roles=new ArrayList<Role>();
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

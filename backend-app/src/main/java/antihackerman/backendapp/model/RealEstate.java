@@ -35,7 +35,7 @@ public class RealEstate {
     @Column(name = "location", nullable = false)
     private String location;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Group group;
 
     @ManyToMany(mappedBy = "realestatesTenanting", fetch = FetchType.LAZY)

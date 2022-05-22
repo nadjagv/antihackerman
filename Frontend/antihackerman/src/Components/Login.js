@@ -5,8 +5,11 @@ import environment from "../Constants/Environment";
 import AuthService from "../Services/AuthService";
 
 function Login() {
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  axios.defaults.withCredentials = true
 
   let loginDetails = {
     username: username,
@@ -16,6 +19,7 @@ function Login() {
     axios
       .post(environment.baseURL + "auth/login", loginDetails)
       .then((response) => {
+        console.log(response.headers)
         AuthService.setUser(response.data);
       });
   };

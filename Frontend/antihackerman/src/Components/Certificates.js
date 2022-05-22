@@ -41,6 +41,9 @@ function Certificates() {
   const [revocationReason, setRevocationReason] = useState(
     revocationReasons[0]
   );
+
+  axios.defaults.withCredentials = true
+
   useEffect(() => {
     axios.get(environment.baseURL + "cert").then((response) => {
       setCertificates(response.data);

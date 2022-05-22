@@ -1,5 +1,7 @@
 package antihackerman.backendapp.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +18,12 @@ public class BlacklistService {
 		blacklistRepository.save(new BlacklistedJWT(jwt));
 	}
 	
-	public BlacklistedJWT findByJwt(String jwt) {
+	public Optional<BlacklistedJWT> findByJwt(String jwt) {
 		return blacklistRepository.findByJwt(jwt);
+	}
+	
+	public boolean exists(String jwt) {
+		return blacklistRepository.existsByJwt(jwt);
 	}
 
 }
