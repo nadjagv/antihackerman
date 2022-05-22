@@ -5,6 +5,9 @@ import Home from "./Components/Home";
 import Certificates from "./Components/Certificates";
 import CSRs from "./Components/CSRs";
 import NewCSR from "./Components/NewCSR";
+import Group from "./Components/Group";
+import Groups from "./Components/Groups";
+import Login from "./Components/Login";
 
 function App() {
   return (
@@ -13,6 +16,9 @@ function App() {
         <Header></Header>
         <Routes>
           <Route exact path="/" element={<Home></Home>}></Route>
+          <Route exact path="/login" element={<Login></Login>}></Route>
+          <Route exact path="/groups" element={<Groups></Groups>}></Route>
+          <Route exact path="/group/:id" element={<Group></Group>}></Route>
           <Route
             exact
             path="/certificates"
