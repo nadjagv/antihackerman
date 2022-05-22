@@ -61,6 +61,7 @@ public class AuthenticationController {
 	
 	@PostMapping("/logout")
 	public ResponseEntity<Object> logout(@RequestHeader (name="Authorization") String token){
+		System.out.println(token);
 		this.blacklistService.save(token);
 		return new ResponseEntity<Object>(null,HttpStatus.OK);
 	}
