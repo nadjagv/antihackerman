@@ -194,6 +194,7 @@ function Group() {
         modal={editUserModal}
         close={setEditUserModal}
         objects={objects}
+        group={id}
       ></EditUser>
       <NewObject
         group={id}
