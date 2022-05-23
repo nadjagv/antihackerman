@@ -24,6 +24,7 @@ import NewObject from "./NewObject";
 import NewUser from "./NewUser";
 import Header from "./Header";
 import AuthService from "../Services/AuthService";
+import AddUser from "./AddUser";
 
 const usersTest = [
   { username: "Ksnaga", email: "hajduk.dusan@gmail.com", role: "owner" },
@@ -38,6 +39,7 @@ function Group() {
   const [users, setUsers] = useState([]);
   const [objects, setObjects] = useState([]);
   const [editUserModal, setEditUserModal] = useState(false);
+  const [addUserModal, setAddUserModal] = useState(false);
   const [newObjectModal, setNewObjectModal] = useState(false);
   const [newUserModal, setNewUserModal] = useState(false);
   const [userToEdit, setUserToEdit] = useState("");
@@ -80,6 +82,10 @@ function Group() {
 
   const handleNewUserModal = () => {
     setNewUserModal(true);
+  };
+
+  const handleAddUserModal = () => {
+    setAddUserModal(true);
   };
 
   const editUserHandle = (user) => {
@@ -149,6 +155,15 @@ function Group() {
           >
             Create user
           </Button>
+          {false && <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              handleAddUserModal();
+            }}
+          >
+            Add existing user
+          </Button>}
         </Box>
         <TableContainer>
           <Table>
@@ -210,6 +225,13 @@ function Group() {
         close={setNewUserModal}
         objects={objects}
       ></NewUser>
+      <AddUser
+        user={userToEdit}
+        modal={addUserModal}
+        close={setAddUserModal}
+        objects={objects}
+        group={id}
+      ></AddUser>
     </div>
   );
 }
