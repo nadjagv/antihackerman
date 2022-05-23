@@ -112,4 +112,19 @@ public class RealEstateService {
         realEstate.getTenants().remove(tenant);
         return realEstateRepository.save(realEstate);
     }
+
+
+    public void deleteById(Integer realEstateId) throws NotFoundException {
+        RealEstate realEstate = realEstateRepository.getById(realEstateId);
+        if (realEstate == null){
+            throw new NotFoundException("RealEstate with id " + realEstateId + " not found.");
+        }
+
+        for (User tenant: realEstate.getTenants()) {
+            tenant.getRealestatesTenanting().remove(realEstate);
+            userRepository.save(tenant);
+        }
+
+        realEstateRepository.deleteById(realEstateId);
+    }
 }

@@ -28,7 +28,7 @@ public class Group {
     @Column(name = "deleted", nullable = false)
     private boolean deleted;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "groupsOwning", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

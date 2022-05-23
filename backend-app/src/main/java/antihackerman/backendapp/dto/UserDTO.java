@@ -26,6 +26,7 @@ public class UserDTO {
         this.lastPasswordResetDate = user.getLastPasswordResetDate();
 
         this.roles = new ArrayList<String>();
+        System.out.println(user.getRoles().size() + "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
         for (Role role: user.getRoles()) {
             this.roles.add(role.getRole());
         }

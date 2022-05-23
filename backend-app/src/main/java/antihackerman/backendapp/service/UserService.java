@@ -93,6 +93,33 @@ public class UserService {
         userRep.delete(found);
     }
 
+    public void deleteFromGroupById(Integer id, Integer groupId) throws NotFoundException {
+        User found = userRep.getById(id);
+        if(found==null){
+            throw new NotFoundException("User with id "+id+" does not exist.");
+        }
+
+        Group group = groupRepository.getById(groupId);
+        if(group==null){
+            throw new NotFoundException("Group with id "+groupId+" does not exist.");
+        }
+
+        found.getGroupsOwning().remove(group);
+        group.getOwners().remove(found);
+        if (group.getOwners().isEmpty()){
+            groupRepository.delete(group);
+        }
+
+        for (RealEstate re: group.getRealEstates()) {
+            re.getTenants().remove(found);
+            realEstateRepository.save(re);
+            found.getRealestatesTenanting().remove(re);
+        }
+
+        groupRepository.save(group);
+        userRep.save(found);
+    }
+
     public User registerUser(RegistrationDTO registrationDTO) throws InvalidInputException, NotFoundException, NotUniqueException {
 
         if (!InputValidationUtil.isEmailValid(registrationDTO.getEmail())){

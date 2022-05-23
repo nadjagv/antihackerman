@@ -4,6 +4,7 @@ import antihackerman.backendapp.dto.CSRdto;
 import antihackerman.backendapp.dto.GroupDTO;
 import antihackerman.backendapp.dto.RealEstateDTO;
 import antihackerman.backendapp.dto.UserDTO;
+import antihackerman.backendapp.exception.NotUniqueException;
 import antihackerman.backendapp.model.CSR;
 import antihackerman.backendapp.model.Group;
 import antihackerman.backendapp.model.RealEstate;
@@ -121,6 +122,19 @@ public class GroupController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<ArrayList<RealEstateDTO>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping()
+    @PreAuthorize("hasAuthority('CREATE_GROUP')")
+    public ResponseEntity<GroupDTO> getById(@RequestBody String name){
+
+        try {
+            Group group = groupService.createGroup(name);
+            return new ResponseEntity<GroupDTO>(new GroupDTO(group), HttpStatus.OK);
+        } catch (NotUniqueException e) {
+            e.printStackTrace();
+            return new ResponseEntity<GroupDTO>(new GroupDTO(), HttpStatus.CONFLICT);
         }
     }
 }

@@ -95,6 +95,18 @@ public class UserController {
         }
     }
 
+    @DeleteMapping("/fromGroup/{id}/{groupId}")
+    @PreAuthorize("hasAuthority('DELETE_USER')")
+    public ResponseEntity<String> deleteById(@PathVariable Integer id, @PathVariable Integer groupId){
+        try {
+            userService.deleteFromGroupById(id, groupId);
+            return new ResponseEntity<String>("Success", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("User not in database.", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping()
     @PreAuthorize("hasAuthority('REGISTER_USER')")
     public ResponseEntity<UserDTO> register(@RequestBody RegistrationDTO dto){

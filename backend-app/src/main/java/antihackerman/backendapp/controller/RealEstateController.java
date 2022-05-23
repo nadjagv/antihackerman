@@ -78,4 +78,16 @@ public class RealEstateController {
             return new ResponseEntity<String>("Exception", HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('DELETE_REALESTATE')")
+    public ResponseEntity<String> deleteById(@PathVariable Integer id){
+        try {
+            realEstateService.deleteById(id);
+            return new ResponseEntity<String>("Success", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("Real estate not in database.", HttpStatus.NOT_FOUND);
+        }
+    }
 }

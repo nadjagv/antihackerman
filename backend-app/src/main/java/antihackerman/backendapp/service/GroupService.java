@@ -1,6 +1,7 @@
 package antihackerman.backendapp.service;
 
 import antihackerman.backendapp.exception.NotFoundException;
+import antihackerman.backendapp.exception.NotUniqueException;
 import antihackerman.backendapp.model.Group;
 import antihackerman.backendapp.model.RealEstate;
 import antihackerman.backendapp.model.User;
@@ -104,4 +105,19 @@ public class GroupService {
 
 
     }
+
+    public Group createGroup(String name) throws NotUniqueException {
+        Group group = groupRep.findOneByName(name);
+        if(group!=null){
+            throw new NotUniqueException("Group with name "+name+" exists.");
+        }
+
+        Group newGroup = Group.builder()
+                .deleted(false)
+                .name(name)
+                .build();
+        return groupRep.save(newGroup);
+
+    }
+
 }
