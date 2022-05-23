@@ -205,7 +205,7 @@ public class UserController {
     public ResponseEntity<ArrayList<RealEstateDTO>> getRealestatesTenanting(@PathVariable Integer userId){
 
         try {
-            ArrayList<RealEstate> groups = (ArrayList<RealEstate>) userService.getRealestatesTenanting(userId);
+            List<RealEstate> groups = userService.getRealestatesTenanting(userId);
             ArrayList<RealEstateDTO> dtos = new ArrayList<>();
             for (RealEstate g: groups) {
                 dtos.add(new RealEstateDTO(g));

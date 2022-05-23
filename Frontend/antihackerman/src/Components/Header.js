@@ -11,6 +11,9 @@ import environment from "../Constants/Environment";
 
 function Header() {
   const [role, setRole] = useState("");
+
+  axios.defaults.withCredentials = true
+  
   const handleLogout = () => {
     axios.post(environment.baseURL + "auth/logout").then((response) => {
       AuthService.removeUser();

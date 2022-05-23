@@ -5,6 +5,7 @@ import {
   TextField,
   Stack,
   Button,
+  Checkbox,
   Autocomplete,
 } from "@mui/material";
 import React from "react";
@@ -13,7 +14,7 @@ import axios from "axios";
 import environment from "../Constants/Environment";
 import modalStyle from "../Constants/Styles";
 
-const roles = ["Admin", "Owner", "Tenant"];
+const roles = ["Owner", "Tenant"];
 
 function NewUser(props) {
   let open = props.modal;
@@ -24,12 +25,22 @@ function NewUser(props) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState(roles[2]);
   const [password, setPassword] = useState("");
+  const [userObjects, setUserObjects] = useState([]);
   const [repPassword, setRepPassword] = useState("");
+  const [options, setOptions] = useState([]);
   const closeModal = () => {
     props.close(false);
   };
 
+  axios.defaults.withCredentials = true
+
+  useEffect(() => {
+    setOptions(props.objects);
+  }, [props]);
+
   const registerUser = () => {
+    console.log(userObjects)
+
     let validPassword = new RegExp(
       "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$"
     );
@@ -59,17 +70,16 @@ function NewUser(props) {
     if (role === "Owner") {
       roles = ["ROLE_TENANT", "ROLE_OWNER"];
     }
-    if (role === "Admin") {
-      roles = ["ROLE_ADMIN"];
-    }
     let registration = {
       password: password,
       username: username,
       email: email,
       roles: roles,
       groupId: props.group,
-      realestate_ids: [],
+      realestate_ids: userObjects.map(object=>object.id),
     };
+
+    console.log(registration)
     axios.post(environment.baseURL + "users", registration).then((response) => {
       closeModal();
     });
@@ -119,12 +129,35 @@ function NewUser(props) {
           <Autocomplete
             value={role}
             options={roles}
+            disableClearable={true}
             sx={{ width: 225 }}
             renderInput={(params) => <TextField {...params} label="Role" />}
             onChange={(event, newValue) => {
               setRole(newValue);
             }}
           ></Autocomplete>
+          {role==="Tenant" && <Autocomplete
+            multiple
+            id="checkboxes-tags-objects"
+            value={userObjects}
+            options={options.map((o) => o)}
+            disableCloseOnSelect
+            disableClearable={true}
+            onChange={(e, newValue) => {
+              setUserObjects(newValue);
+            }}
+            getOptionLabel={(option) => option.name}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox style={{ marginRight: 8 }} checked={selected} />
+                {option.name}
+              </li>
+            )}
+            style={{ width: 500 }}
+            renderInput={(params) => (
+              <TextField {...params} label="Objects" placeholder="Objects" />
+            )}
+          />}
           <Button
             onClick={() => {
               registerUser();

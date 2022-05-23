@@ -41,12 +41,25 @@ function Group() {
   const [userToEdit, setUserToEdit] = useState("");
   const [userToDelete, setUserToDelete] = useState("");
 
+  axios.defaults.withCredentials = true
+
   useEffect(() => {
-    axios
-      .get(environment.baseURL + "groups/all-users/" + id)
-      .then((response) => {
-        setUsers(response.data);
-      });
+    axios.get(environment.baseURL + "groups/tenants/" + id).then((response) => {
+      let usersHelper = [...response.data];
+      usersHelper = usersHelper.map(
+        (user) => (user = { ...user, roleForGroup: "Tenant" })
+      );
+      setUsers(prevUsers=>[...prevUsers,...usersHelper])
+    });
+
+    axios.get(environment.baseURL + "groups/owners/" + id).then((response) => {
+      let usersHelper = [...response.data];
+      usersHelper = usersHelper.map(
+        (user) => (user = { ...user, roleForGroup: "Owner" })
+      );
+      setUsers(prevUsers=>[...prevUsers,...usersHelper])
+    });
+
     axios
       .get(environment.baseURL + "groups/real-estates/" + id)
       .then((response) => {
@@ -55,7 +68,8 @@ function Group() {
   }, []);
 
   const handleRemoveObject = (objectId) => {
-    //axios.delete(environment.baseURL+"groups")
+    axios.delete(environment.baseURL+"real-estates/"+objectId)
+    window.location.reload();
   };
 
   const handleNewObjectModal = () => {
@@ -74,6 +88,7 @@ function Group() {
     axios.delete(environment.baseURL + "users/" + id).then((response) => {
       alert("User deleted");
     });
+    window.location.reload();
   };
   return (
     <div>
@@ -94,7 +109,7 @@ function Group() {
                 <TableRow key={user.username}>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.roleForGroup}</TableCell>
                   <TableCell>
                     <Button
                       onClick={() => {
@@ -131,22 +146,13 @@ function Group() {
           >
             Create user
           </Button>
-          <Button
-            onClick={() => {
-              handleNewObjectModal();
-            }}
-            variant="contained"
-            color="success"
-          >
-            Create object
-          </Button>
         </Box>
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell>ID</TableCell>
+                <TableCell>Location</TableCell>
                 <TableCell>Delete</TableCell>
               </TableRow>
             </TableHead>
@@ -154,7 +160,7 @@ function Group() {
               {objects.map((o) => (
                 <TableRow>
                   <TableCell>{o.name}</TableCell>
-                  <TableCell>{o.id}</TableCell>
+                  <TableCell>{o.location}</TableCell>
                   <TableCell>
                     <Button
                       onClick={() => {
@@ -172,6 +178,17 @@ function Group() {
           </Table>
         </TableContainer>
       </Stack>
+      <Box marginTop={5} marginBottom={5}>
+        <Button
+          onClick={() => {
+            handleNewObjectModal();
+          }}
+          variant="contained"
+          color="success"
+        >
+          Create object
+        </Button>
+      </Box>
       <EditUser
         user={userToEdit}
         modal={editUserModal}
@@ -187,6 +204,7 @@ function Group() {
         group={id}
         modal={newUserModal}
         close={setNewUserModal}
+        objects={objects}
       ></NewUser>
     </div>
   );
