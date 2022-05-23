@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -138,8 +140,8 @@ public class UserService {
             throw new NotUniqueException("Username already in use.");
         }
 
-        List<Group> groups_owning = new ArrayList<Group>();
-        List<RealEstate> realestates_tenanting = new ArrayList<RealEstate>();
+        Set<Group> groups_owning = new HashSet<>();
+        Set<RealEstate> realestates_tenanting = new HashSet<RealEstate>();
         List<Role> roles = new ArrayList<Role>();
 
         if (registrationDTO.getRoles().contains("ROLE_OWNER")){
@@ -242,7 +244,7 @@ public class UserService {
         return null;
     }
 
-    public List<RealEstate> getRealestatesTenanting(Integer id) throws NotFoundException {
+    public Set<RealEstate> getRealestatesTenanting(Integer id) throws NotFoundException {
         User user = userRep.getById(id);
         if(user==null){
             throw new NotFoundException("User with id "+id+" does not exist.");
@@ -250,7 +252,7 @@ public class UserService {
         return user.getRealestatesTenanting();
     }
 
-    public List<Group> getGroupsOwning(Integer id) throws NotFoundException {
+    public Set<Group> getGroupsOwning(Integer id) throws NotFoundException {
         User user = userRep.getById(id);
         if(user==null){
             throw new NotFoundException("User with id "+id+" does not exist.");

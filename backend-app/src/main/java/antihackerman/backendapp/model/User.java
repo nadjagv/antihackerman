@@ -2,10 +2,7 @@ package antihackerman.backendapp.model;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -58,13 +55,13 @@ public class User implements UserDetails{
 	@JoinTable(name = "users_groups_owning",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"))
-	private List<Group> groupsOwning =new ArrayList<Group>();
+	private Set<Group> groupsOwning =new HashSet<>();
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "users_realestates_tenanting",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "realestate_id", referencedColumnName = "id"))
-	private List<RealEstate> realestatesTenanting =new ArrayList<RealEstate>();
+	private Set<RealEstate> realestatesTenanting =new HashSet<>();
 	
 	@Column(name = "last_password_reset_date")
     private Timestamp lastPasswordResetDate; 

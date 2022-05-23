@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin(origins = {"http://localhost:3000/" })
 @RestController
@@ -188,7 +189,7 @@ public class UserController {
     public ResponseEntity<ArrayList<GroupDTO>> getGroupsOwning(@PathVariable Integer userId){
 
         try {
-            List<Group> groups = userService.getGroupsOwning(userId);
+            Set<Group> groups = userService.getGroupsOwning(userId);
             ArrayList<GroupDTO> dtos = new ArrayList<>();
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));
@@ -205,7 +206,7 @@ public class UserController {
     public ResponseEntity<ArrayList<RealEstateDTO>> getRealestatesTenanting(@PathVariable Integer userId){
 
         try {
-            List<RealEstate> groups = userService.getRealestatesTenanting(userId);
+            Set<RealEstate> groups = userService.getRealestatesTenanting(userId);
             ArrayList<RealEstateDTO> dtos = new ArrayList<>();
             for (RealEstate g: groups) {
                 dtos.add(new RealEstateDTO(g));
