@@ -23,9 +23,14 @@ function NewObject(props) {
   axios.defaults.withCredentials = true
 
   const createObject = () => {
-    axios.post(environment.baseURL +'real-estates',{name: name, location: location,groupId: props.group})
-    props.close(false);
-    window.location.reload();
+    if(name!=="" && location!==""){
+      axios.post(environment.baseURL +'real-estates',{name: name, location: location,groupId: props.group})
+      props.close(false);
+      window.location.reload();
+    }
+    else{
+      alert("Empty fields!")
+    }
   };
   const closeModal = () => {
     props.close(false);

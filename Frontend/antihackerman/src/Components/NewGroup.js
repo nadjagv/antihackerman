@@ -22,9 +22,13 @@ import {
     axios.defaults.withCredentials = true
   
     const createGroup = () => {
-      axios.post(environment.baseURL +'groups',name)
-      props.close(false);
-      window.location.reload();
+      if(name!==""){
+        axios.post(environment.baseURL +'groups',name)
+        props.close(false);
+        window.location.reload();
+      }else{
+        alert("Empty fields!")
+      }
     };
     const closeModal = () => {
       props.close(false);

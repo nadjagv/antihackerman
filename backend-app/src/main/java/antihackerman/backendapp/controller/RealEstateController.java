@@ -24,7 +24,7 @@ public class RealEstateController {
     @PostMapping()
     @PreAuthorize("hasAuthority('CREATE_REALESTATE')")
     public ResponseEntity<RealEstateDTO> createRealEstate(@RequestBody RealEstateDTO dto){
-        if (dto.getGroupId() == null || dto.getLocation() == null || dto.getName() == null){
+        if (dto.getGroupId() == null || dto.getLocation() == null || dto.getName() == null || dto.getLocation().equals("") || dto.getName().equals("")){
             return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
         try {

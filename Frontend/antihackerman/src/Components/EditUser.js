@@ -26,9 +26,12 @@ function EditUser(props) {
   axios.defaults.withCredentials = true
 
   useEffect(() => {
+    console.log(props.user.roleForGroup)
     if(props.user.roleForGroup==='Tenant'){
       axios.get(environment.baseURL+'users/realestatesTenanting/'+props.user.id).then(response=>{
-        setUserObjects(response.data)
+        const objects=[...response.data]
+        const objects2=objects.filter(obj=> obj.groupId==props.group)
+        setUserObjects(objects2)
       })
     }
     setOptions(props.objects);
@@ -37,12 +40,17 @@ function EditUser(props) {
   const changeUser = () => {
     if(role==='Tenant'){
       let realestate_ids= userObjects.map(object=>object.id);
-      axios.put(environment.baseURL+'users/to-tenant/'+props.user.id+'/'+props.group,realestate_ids);
+      if(realestate_ids.length===0){
+        alert("Need to select at least 1 object!")
+      }else{
+        axios.put(environment.baseURL+'users/to-tenant/'+props.user.id+'/'+props.group,realestate_ids);
+        props.close(false);
+      }
     }else{
       let realestate_ids= options.map(object=>object.id);
       axios.put(environment.baseURL+'users/to-owner/'+props.user.id+'/'+props.group,realestate_ids);
+      props.close(false);
     }
-    props.close(false);
   };
   const closeModal = () => {
     props.close(false);
