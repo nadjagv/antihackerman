@@ -1,15 +1,26 @@
 import { Grid, Paper, TextField, Button } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import environment from "../Constants/Environment";
 import AuthService from "../Services/AuthService";
+import {useNavigate} from "react-router-dom"
+import Header from "./Header";
 
-function Login() {
+function Login(props) {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigation = useNavigate();
 
   axios.defaults.withCredentials = true
+
+  useEffect(() => {
+    if(AuthService.getUser()){
+      axios.post(environment.baseURL + "auth/logout").then((response) => {
+        AuthService.removeUser();
+      });
+    }
+  }, []);
 
   let loginDetails = {
     username: username,
@@ -19,8 +30,16 @@ function Login() {
     axios
       .post(environment.baseURL + "auth/login", loginDetails)
       .then((response) => {
-        console.log(response.headers)
-        AuthService.setUser(response.data);
+        console.log(response.data)
+        if(response.data.roles.includes('ROLE_ADMIN')){
+          AuthService.setUser(response.data);
+          navigation("/home");
+        }
+        else{
+          alert("Bad credentials")
+        }
+      }).catch(error=>{
+        alert("Bad credentials")
       });
   };
 
@@ -32,6 +51,8 @@ function Login() {
   };
   const btnstyle = { margin: "8px 0" };
   return (
+    <div>
+    <Header user={AuthService.getUser()}></Header>
     <Grid>
       <Paper elevation={10} style={paperStyle}>
         <Grid>
@@ -72,6 +93,7 @@ function Login() {
         </Button>
       </Paper>
     </Grid>
+    </div>
   );
 }
 export default Login;

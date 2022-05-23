@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -9,8 +9,7 @@ import AuthService from "../Services/AuthService";
 import axios from "axios";
 import environment from "../Constants/Environment";
 
-function Header() {
-  const [role, setRole] = useState("");
+function Header(props) {
 
   axios.defaults.withCredentials = true
   
@@ -19,77 +18,99 @@ function Header() {
       AuthService.removeUser();
     });
   };
-  return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography
-            color="inherit"
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
-            <Link style={{ textDecoration: "none" }} to="/home">
-              Home
-            </Link>
-          </Typography>
-          <Typography
-            color="inherit"
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
-            <Link style={{ textDecoration: "none" }} to="/groups">
-              Groups
-            </Link>
-          </Typography>
-          <Typography
-            color="inherit"
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
-            <Link style={{ textDecoration: "none" }} to="/certificates">
-              Certificates
-            </Link>
-          </Typography>
-          <Typography
-            color="inherit"
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
-            <Link style={{ textDecoration: "none" }} to="/CSRs">
-              CSRs
-            </Link>
-          </Typography>
-          <Typography
-            color="inherit"
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
-            <Link style={{ textDecoration: "none" }} to="/newCSR">
-              New CSR
-            </Link>
-          </Typography>
-          <Typography
-            color="inherit"
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/"
-              onClick={handleLogout}
+  if(props.user){
+    return (
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
             >
-              Logout
-            </Link>
-          </Typography>
-        </Toolbar>
-      </AppBar>
-    </Box>
-  );
+              <Link style={{ textDecoration: "none" }} to="/home">
+                Home
+              </Link>
+            </Typography>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
+              <Link style={{ textDecoration: "none" }} to="/groups">
+                Groups
+              </Link>
+            </Typography>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
+              <Link style={{ textDecoration: "none" }} to="/certificates">
+                Certificates
+              </Link>
+            </Typography>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
+              <Link style={{ textDecoration: "none" }} to="/CSRs">
+                CSRs
+              </Link>
+            </Typography>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
+              <Link style={{ textDecoration: "none" }} to="/newCSR">
+                New CSR
+              </Link>
+            </Typography>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
+              <Link
+                style={{ textDecoration: "none" }}
+                to="/"
+                onClick={handleLogout}
+              >
+                Logout
+              </Link>
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </Box>
+    );
+  }else{
+    return (
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
+              <Link style={{ textDecoration: "none" }} to="/newCSR">
+                New CSR
+              </Link>
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </Box>
+    );
+  }
+
 }
 export default Header;

@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import environment from "../Constants/Environment";
 import axios from "axios";
 import NewGroup from "./NewGroup";
+import AuthService from "../Services/AuthService";
+import Header from "./Header";
 
 const testGroups = [
   { name: "Hajduci", id: 1 },
@@ -41,6 +43,7 @@ function Groups() {
 
   return (
     <div>
+      <Header user={AuthService.getUser()}></Header>
       <TableContainer>
         <Table>
           <TableHead>

@@ -1,6 +1,7 @@
 import React from "react";
 import AuthService from "../Services/AuthService";
 import { useNavigate } from "react-router-dom";
+import Header from "./Header";
 
 function Home() {
   const navigation = useNavigate();
@@ -10,6 +11,7 @@ function Home() {
 
   return (
     <div>
+      <Header user={AuthService.getUser()}></Header>
       <img src="/binary-code-greenjpg.jpg"></img>
     </div>
   );

@@ -3,6 +3,11 @@ const getUser = () => {
   return user;
 };
 
+const isAuth = ()=>{
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  return user===null;
+}
+
 const setUser = (user) => {
   sessionStorage.setItem("user", JSON.stringify(user));
 };
@@ -10,4 +15,4 @@ const setUser = (user) => {
 const removeUser = () => {
   sessionStorage.removeItem("user");
 };
-export default { getUser, setUser, removeUser };
+export default { getUser, setUser, removeUser,isAuth };

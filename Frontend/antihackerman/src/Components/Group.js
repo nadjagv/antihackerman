@@ -22,6 +22,8 @@ import EditUser from "./EditUser";
 import { useParams } from "react-router-dom";
 import NewObject from "./NewObject";
 import NewUser from "./NewUser";
+import Header from "./Header";
+import AuthService from "../Services/AuthService";
 
 const usersTest = [
   { username: "Ksnaga", email: "hajduk.dusan@gmail.com", role: "owner" },
@@ -92,6 +94,7 @@ function Group() {
   };
   return (
     <div>
+      <Header user={AuthService.getUser()}></Header>
       <Stack>
         <TableContainer>
           <Table>

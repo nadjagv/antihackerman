@@ -18,6 +18,8 @@ import {
 import axios from "axios";
 import modalStyle from "../Constants/Styles";
 import { type } from "@testing-library/user-event/dist/type";
+import Header from "./Header";
+import AuthService from "../Services/AuthService";
 
 const extensions = [
   "AUTHORITY_KEY_IDENTIFIER",
@@ -65,6 +67,7 @@ function CSRs() {
   };
   return (
     <div>
+      <Header user={AuthService.getUser()}></Header>
       <TableContainer>
         <Table>
           <TableHead>

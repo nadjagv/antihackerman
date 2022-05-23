@@ -17,6 +17,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import environment from "../Constants/Environment";
 import modalStyle from "../Constants/Styles";
+import Header from "./Header";
+import AuthService from "../Services/AuthService";
 
 const revocationReasons = [
   "AA_COMPROMISE",
@@ -89,6 +91,7 @@ function Certificates() {
   };
   return (
     <div>
+      <Header user={AuthService.getUser()}></Header>
       <TableContainer>
         <Table>
           <TableHead>
