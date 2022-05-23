@@ -29,7 +29,7 @@ function Header() {
             component="div"
             sx={{ flexGrow: 1 }}
           >
-            <Link style={{ textDecoration: "none" }} to="/">
+            <Link style={{ textDecoration: "none" }} to="/home">
               Home
             </Link>
           </Typography>
@@ -81,7 +81,7 @@ function Header() {
           >
             <Link
               style={{ textDecoration: "none" }}
-              to="/login"
+              to="/"
               onClick={handleLogout}
             >
               Logout

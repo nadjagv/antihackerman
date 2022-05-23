@@ -34,7 +34,16 @@ function EditUser(props) {
     setOptions(props.objects);
     setRole(props.user.roleForGroup)
   }, [props]);
-  const changeUser = () => {};
+  const changeUser = () => {
+    if(role==='Tenant'){
+      let realestate_ids= userObjects.map(object=>object.id);
+      axios.put(environment.baseURL+'users/to-tenant/'+props.user.id+'/'+props.group,realestate_ids);
+    }else{
+      let realestate_ids= options.map(object=>object.id);
+      axios.put(environment.baseURL+'users/to-owner/'+props.user.id+'/'+props.group,realestate_ids);
+    }
+    props.close(false);
+  };
   const closeModal = () => {
     props.close(false);
   };
