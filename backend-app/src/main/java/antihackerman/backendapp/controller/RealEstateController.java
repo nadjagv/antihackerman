@@ -24,7 +24,9 @@ public class RealEstateController {
     @PostMapping()
     @PreAuthorize("hasAuthority('CREATE_REALESTATE')")
     public ResponseEntity<RealEstateDTO> createRealEstate(@RequestBody RealEstateDTO dto){
-
+        if (dto.getGroupId() == null || dto.getLocation() == null || dto.getName() == null){
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         try {
             RealEstate realEstate = realEstateService.createRealestate(dto);
             return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(realEstate), HttpStatus.OK);
@@ -40,32 +42,40 @@ public class RealEstateController {
     @PutMapping("/add-tenant/{userId}")
     @PreAuthorize("hasAuthority('EDIT_REALESTATE')")
     public ResponseEntity<String> addTenant(@PathVariable Integer userId, @RequestBody List<Integer> realEstateIds){
-
+        if (realEstateIds == null){
+            return new ResponseEntity<String>("Exception", HttpStatus.UNPROCESSABLE_ENTITY);
+        }else if (realEstateIds.isEmpty()){
+            return new ResponseEntity<String>("Exception", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         try {
             realEstateService.editRealEstates(userId, realEstateIds, true);
             return new ResponseEntity<String>("Success", HttpStatus.OK);
         }  catch (NotFoundException e) {
             e.printStackTrace();
-            return new ResponseEntity<String>("Success", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Exception", HttpStatus.NOT_FOUND);
         }catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<String>("Success", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("Exception", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/remove-tenant/{userId}")
     @PreAuthorize("hasAuthority('EDIT_REALESTATE')")
     public ResponseEntity<String> removeTenant(@PathVariable Integer userId, @RequestBody List<Integer> realEstateIds){
-
+        if (realEstateIds == null){
+            return new ResponseEntity<String>("Exception", HttpStatus.UNPROCESSABLE_ENTITY);
+        }else if (realEstateIds.isEmpty()){
+            return new ResponseEntity<String>("Exception", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         try {
             realEstateService.editRealEstates(userId, realEstateIds, false);
             return new ResponseEntity<String>("Success", HttpStatus.OK);
         }  catch (NotFoundException e) {
             e.printStackTrace();
-            return new ResponseEntity<String>("Success", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Exception", HttpStatus.NOT_FOUND);
         }catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<String>("Success", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("Exception", HttpStatus.BAD_REQUEST);
         }
     }
 }

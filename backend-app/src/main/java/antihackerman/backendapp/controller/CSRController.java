@@ -27,7 +27,7 @@ public class CSRController {
     CSRService csrService;
 
     @PostMapping(path = "/uploadCSR", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAuthority('PKI_ACCESS')")
+    @PreAuthorize("hasAuthority('CREATE_CSR')")
     public ResponseEntity uploadCSR(@RequestParam(("file")) MultipartFile q) throws Exception {
         String csr = FileUtil.readFile(q);
         csrService.addRequest(csr);
@@ -35,7 +35,7 @@ public class CSRController {
     }
 
     @PostMapping(path = "/generateCSR")
-    @PreAuthorize("hasAuthority('PKI_ACCESS')")
+    @PreAuthorize("hasAuthority('CREATE_CSR')")
     public ResponseEntity generateCSR(@RequestBody CSRdto dto) throws Exception {
         SubjectData subjectData = csrService.generateSubjectDataCSR(dto);
         csrService.generateCSR(subjectData);
@@ -61,7 +61,7 @@ public class CSRController {
 
     @GetMapping("/{uniqueFilename}")
     @PreAuthorize("hasAuthority('PKI_ACCESS')")
-    public ResponseEntity<CSRdto> getAll(@PathVariable String uniqueFilename){
+    public ResponseEntity<CSRdto> getOne(@PathVariable String uniqueFilename){
 
         try {
             CSR csr = csrService.readSingleCSR(uniqueFilename);

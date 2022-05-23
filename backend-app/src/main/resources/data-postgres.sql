@@ -15,6 +15,7 @@ insert into privileges(name,deleted) VALUES ('READ_USERS',false);           --7
 insert into privileges(name,deleted) VALUES ('REGISTER_USER',false);        --8
 insert into privileges(name,deleted) VALUES ('EDIT_USER',false);            --9
 insert into privileges(name,deleted) VALUES ('DELETE_USER',false);          --10
+insert into privileges(name,deleted) VALUES ('CREATE_CSR',false);          --11
 
 --roles
 
@@ -34,13 +35,16 @@ insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,7);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,8);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,9);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,10);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,11);
 
 --owner privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,2);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,6);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,11);
 
 --tenant privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,6);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,11);
 
 --user-roles
 

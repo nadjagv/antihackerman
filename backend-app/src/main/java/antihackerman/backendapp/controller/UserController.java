@@ -1,6 +1,7 @@
 package antihackerman.backendapp.controller;
 
 import antihackerman.backendapp.dto.GroupDTO;
+import antihackerman.backendapp.dto.RealEstateDTO;
 import antihackerman.backendapp.dto.RegistrationDTO;
 import antihackerman.backendapp.dto.UserDTO;
 import antihackerman.backendapp.exception.InvalidInputException;
@@ -97,7 +98,18 @@ public class UserController {
     @PostMapping()
     @PreAuthorize("hasAuthority('REGISTER_USER')")
     public ResponseEntity<UserDTO> register(@RequestBody RegistrationDTO dto){
-
+        if (dto.getGroupId() == null || dto.getRoles()==null || dto.getEmail() == null
+                || dto.getUsername()==null || dto.getPassword() == null){
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }else if (dto.getRoles().isEmpty()){
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }else if (!dto.getRoles().contains("ROLE_OWNER")&&dto.getRoles().contains("ROLE_TENANT")){
+            if (dto.getRealestate_ids() == null){
+                return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+            }else if (dto.getRealestate_ids().isEmpty()){
+                return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+        }
         try {
             User user = userService.registerUser(dto);
             return new ResponseEntity<UserDTO>(new UserDTO(user), HttpStatus.OK);
@@ -120,7 +132,11 @@ public class UserController {
     @PreAuthorize("hasAuthority('EDIT_USER')")
     public ResponseEntity<UserDTO> changeToOwner(@PathVariable Integer userId, @PathVariable Integer groupId,
                                                  @RequestBody List<Integer> realestateIds){
-
+        if (realestateIds == null){
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }else if (realestateIds.isEmpty()){
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         try {
             User user = userService.changeRole(groupId, userId, "ROLE_OWNER", realestateIds);
             return new ResponseEntity<UserDTO>(new UserDTO(user), HttpStatus.OK);
@@ -137,7 +153,11 @@ public class UserController {
     @PreAuthorize("hasAuthority('EDIT_USER')")
     public ResponseEntity<UserDTO> changeToTenant(@PathVariable Integer userId, @PathVariable Integer groupId,
                                                   @RequestBody List<Integer> realestateIds){
-
+        if (realestateIds == null){
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }else if (realestateIds.isEmpty()){
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         try {
             User user = userService.changeRole(groupId, userId, "ROLE_TENANT", realestateIds);
             return new ResponseEntity<UserDTO>(new UserDTO(user), HttpStatus.OK);
