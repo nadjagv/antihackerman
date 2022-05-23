@@ -32,4 +32,34 @@ public class RealEstateController {
             return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/add-tenant/{userId}/{realEstateId}")
+    public ResponseEntity<RealEstateDTO> addTenant(@PathVariable Integer userId, @PathVariable Integer realEstateId){
+
+        try {
+            RealEstate realEstate = realEstateService.addTenant(realEstateId, userId);
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(realEstate), HttpStatus.OK);
+        }  catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/remove-tenant/{userId}/{realEstateId}")
+    public ResponseEntity<RealEstateDTO> removeTenant(@PathVariable Integer userId, @PathVariable Integer realEstateId){
+
+        try {
+            RealEstate realEstate = realEstateService.removeTenant(realEstateId, userId);
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(realEstate), HttpStatus.OK);
+        }  catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

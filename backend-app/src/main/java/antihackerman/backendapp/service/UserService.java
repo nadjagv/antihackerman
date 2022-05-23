@@ -116,9 +116,11 @@ public class UserService {
                 throw new NotFoundException("Group with id "+registrationDTO.getGroupId()+" does not exist.");
             }
             groups_owning.add(group);
+
+            registrationDTO.getRoles().add("ROLE_TENANT");
         }
 
-        if (registrationDTO.getRoles().contains("ROLE_TENANT")){
+        if (registrationDTO.getRoles().contains("ROLE_TENANT") && registrationDTO.getRealestate_ids() != null){
             List<Integer> realestate_ids = registrationDTO.getRealestate_ids().stream().distinct().collect(Collectors.toList());
             for (Integer realEstateId: realestate_ids) {
                 RealEstate realEstate = realEstateRepository.getById(realEstateId);
