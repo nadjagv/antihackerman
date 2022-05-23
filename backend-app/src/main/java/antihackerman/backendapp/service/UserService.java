@@ -242,4 +242,20 @@ public class UserService {
         return null;
     }
 
+    public List<RealEstate> getRealestatesTenanting(Integer id) throws NotFoundException {
+        User user = userRep.getById(id);
+        if(user==null){
+            throw new NotFoundException("User with id "+id+" does not exist.");
+        }
+        return user.getRealestatesTenanting();
+    }
+
+    public List<Group> getGroupsOwning(Integer id) throws NotFoundException {
+        User user = userRep.getById(id);
+        if(user==null){
+            throw new NotFoundException("User with id "+id+" does not exist.");
+        }
+        return user.getGroupsOwning();
+    }
+
 }

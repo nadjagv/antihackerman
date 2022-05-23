@@ -8,6 +8,7 @@ import antihackerman.backendapp.exception.InvalidInputException;
 import antihackerman.backendapp.exception.NotFoundException;
 import antihackerman.backendapp.exception.NotUniqueException;
 import antihackerman.backendapp.model.Group;
+import antihackerman.backendapp.model.RealEstate;
 import antihackerman.backendapp.model.User;
 import antihackerman.backendapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,6 +180,40 @@ public class UserController {
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/groupsOwning/{userId}")
+    @PreAuthorize("hasAuthority('READ_ONE_USER')")
+    public ResponseEntity<ArrayList<GroupDTO>> getGroupsOwning(@PathVariable Integer userId){
+
+        try {
+            ArrayList<Group> groups = (ArrayList<Group>) userService.getGroupsOwning(userId);
+            ArrayList<GroupDTO> dtos = new ArrayList<>();
+            for (Group g: groups) {
+                dtos.add(new GroupDTO(g));
+            }
+            return new ResponseEntity<ArrayList<GroupDTO>>(dtos, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<ArrayList<GroupDTO>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/realestatesTenanting/{userId}")
+    @PreAuthorize("hasAuthority('READ_ONE_USER')")
+    public ResponseEntity<ArrayList<RealEstateDTO>> getRealestatesTenanting(@PathVariable Integer userId){
+
+        try {
+            ArrayList<RealEstate> groups = (ArrayList<RealEstate>) userService.getRealestatesTenanting(userId);
+            ArrayList<RealEstateDTO> dtos = new ArrayList<>();
+            for (RealEstate g: groups) {
+                dtos.add(new RealEstateDTO(g));
+            }
+            return new ResponseEntity<ArrayList<RealEstateDTO>>(dtos, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<ArrayList<RealEstateDTO>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
     }
 }
