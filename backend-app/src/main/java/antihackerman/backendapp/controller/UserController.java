@@ -12,10 +12,12 @@ import antihackerman.backendapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
+import java.util.List;
 
 @CrossOrigin(origins = {"http://localhost:3000/" })
 @RestController
@@ -25,6 +27,7 @@ public class UserController {
     UserService userService;
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('READ_USERS')")
     public ResponseEntity<ArrayList<UserDTO>> getAll(){
 
         try {
@@ -41,6 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/by-id/{id}")
+    @PreAuthorize("hasAuthority('READ_ONE_USER')")
     public ResponseEntity<UserDTO> getById(@PathVariable Integer id){
 
         try {
@@ -53,6 +57,7 @@ public class UserController {
     }
 
     @GetMapping("/by-username/{username}")
+    @PreAuthorize("hasAuthority('READ_ONE_USER')")
     public ResponseEntity<UserDTO> getByUsername(@PathVariable String username){
 
         try {
@@ -65,6 +70,7 @@ public class UserController {
     }
 
     @GetMapping("/by-email/{email}")
+    @PreAuthorize("hasAuthority('READ_ONE_USER')")
     public ResponseEntity<UserDTO> getByEmail(@PathVariable String email){
 
         try {
@@ -77,6 +83,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('DELETE_USER')")
     public ResponseEntity<String> deleteById(@PathVariable Integer id){
         try {
             userService.deleteById(id);
@@ -88,6 +95,7 @@ public class UserController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('REGISTER_USER')")
     public ResponseEntity<UserDTO> register(@RequestBody RegistrationDTO dto){
 
         try {
@@ -109,10 +117,12 @@ public class UserController {
     }
 
     @PutMapping("/to-owner/{userId}/{groupId}")
-    public ResponseEntity<UserDTO> changeToOwner(@PathVariable Integer userId, @PathVariable Integer groupId){
+    @PreAuthorize("hasAuthority('EDIT_USER')")
+    public ResponseEntity<UserDTO> changeToOwner(@PathVariable Integer userId, @PathVariable Integer groupId,
+                                                 @RequestBody List<Integer> realestateIds){
 
         try {
-            User user = userService.changeRole(groupId, userId, "ROLE_OWNER");
+            User user = userService.changeRole(groupId, userId, "ROLE_OWNER", realestateIds);
             return new ResponseEntity<UserDTO>(new UserDTO(user), HttpStatus.OK);
         }  catch (NotFoundException e) {
             e.printStackTrace();
@@ -124,10 +134,12 @@ public class UserController {
     }
 
     @PutMapping("/to-tenant/{userId}/{groupId}")
-    public ResponseEntity<UserDTO> changeToTenant(@PathVariable Integer userId, @PathVariable Integer groupId){
+    @PreAuthorize("hasAuthority('EDIT_USER')")
+    public ResponseEntity<UserDTO> changeToTenant(@PathVariable Integer userId, @PathVariable Integer groupId,
+                                                  @RequestBody List<Integer> realestateIds){
 
         try {
-            User user = userService.changeRole(groupId, userId, "ROLE_TENANT");
+            User user = userService.changeRole(groupId, userId, "ROLE_TENANT", realestateIds);
             return new ResponseEntity<UserDTO>(new UserDTO(user), HttpStatus.OK);
         }  catch (NotFoundException e) {
             e.printStackTrace();

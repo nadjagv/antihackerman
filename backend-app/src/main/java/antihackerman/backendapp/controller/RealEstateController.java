@@ -9,7 +9,10 @@ import antihackerman.backendapp.service.RealEstateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = {"http://localhost:3000/" })
 @RestController
@@ -19,6 +22,7 @@ public class RealEstateController {
     private RealEstateService realEstateService;
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('CREATE_REALESTATE')")
     public ResponseEntity<RealEstateDTO> createRealEstate(@RequestBody RealEstateDTO dto){
 
         try {
@@ -33,33 +37,35 @@ public class RealEstateController {
         }
     }
 
-    @PutMapping("/add-tenant/{userId}/{realEstateId}")
-    public ResponseEntity<RealEstateDTO> addTenant(@PathVariable Integer userId, @PathVariable Integer realEstateId){
+    @PutMapping("/add-tenant/{userId}")
+    @PreAuthorize("hasAuthority('EDIT_REALESTATE')")
+    public ResponseEntity<String> addTenant(@PathVariable Integer userId, @RequestBody List<Integer> realEstateIds){
 
         try {
-            RealEstate realEstate = realEstateService.addTenant(realEstateId, userId);
-            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(realEstate), HttpStatus.OK);
+            realEstateService.editRealEstates(userId, realEstateIds, true);
+            return new ResponseEntity<String>("Success", HttpStatus.OK);
         }  catch (NotFoundException e) {
             e.printStackTrace();
-            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Success", HttpStatus.NOT_FOUND);
         }catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("Success", HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PutMapping("/remove-tenant/{userId}/{realEstateId}")
-    public ResponseEntity<RealEstateDTO> removeTenant(@PathVariable Integer userId, @PathVariable Integer realEstateId){
+    @PutMapping("/remove-tenant/{userId}")
+    @PreAuthorize("hasAuthority('EDIT_REALESTATE')")
+    public ResponseEntity<String> removeTenant(@PathVariable Integer userId, @RequestBody List<Integer> realEstateIds){
 
         try {
-            RealEstate realEstate = realEstateService.removeTenant(realEstateId, userId);
-            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(realEstate), HttpStatus.OK);
+            realEstateService.editRealEstates(userId, realEstateIds, false);
+            return new ResponseEntity<String>("Success", HttpStatus.OK);
         }  catch (NotFoundException e) {
             e.printStackTrace();
-            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Success", HttpStatus.NOT_FOUND);
         }catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("Success", HttpStatus.BAD_REQUEST);
         }
     }
 }

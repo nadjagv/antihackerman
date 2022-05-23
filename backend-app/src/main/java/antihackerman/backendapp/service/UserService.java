@@ -158,7 +158,7 @@ public class UserService {
 
 
 
-    public User changeRole(Integer groupId, Integer userId, String roleStr) throws NotFoundException {
+    public User changeRole(Integer groupId, Integer userId, String roleStr, List<Integer> realestateIds) throws NotFoundException {
         Group group = groupRepository.getById(groupId);
         if(group==null){
             throw new NotFoundException("Group with id "+groupId+" does not exist.");
@@ -182,9 +182,12 @@ public class UserService {
                 user.getRoles().remove(roleRepository.findOneByRole("ROLE_OWNER"));
             }
             /////////////////
-
-            for (RealEstate r: group.getRealEstates() ) {
-                user.getRealestatesTenanting().add(r);
+            for (Integer realestateId: realestateIds) {
+                RealEstate realEstate = realEstateRepository.getById(realestateId);
+                if (realEstate == null){
+                    throw new NotFoundException("Real estate with id " + realestateId + " not found.");
+                }
+                user.getRealestatesTenanting().add(realEstate);
             }
 
             groupRepository.save(group);

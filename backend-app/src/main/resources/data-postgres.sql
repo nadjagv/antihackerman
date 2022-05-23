@@ -5,7 +5,16 @@ insert into users (deleted,username,password,email) values (false,'user3','$2a$1
 
 --privileges
 
-insert into privileges(name,deleted) VALUES ('READ',false);
+insert into privileges(name,deleted) VALUES ('PKI_ACCESS',false);                 --1
+insert into privileges(name,deleted) VALUES ('READ_ONE_GROUP',false);       --2
+insert into privileges(name,deleted) VALUES ('READ_GROUPS',false);          --3
+insert into privileges(name,deleted) VALUES ('CREATE_REALESTATE',false);    --4
+insert into privileges(name,deleted) VALUES ('EDIT_REALESTATE',false);      --5
+insert into privileges(name,deleted) VALUES ('READ_ONE_USER',false);        --6
+insert into privileges(name,deleted) VALUES ('READ_USERS',false);           --7
+insert into privileges(name,deleted) VALUES ('REGISTER_USER',false);        --8
+insert into privileges(name,deleted) VALUES ('EDIT_USER',false);            --9
+insert into privileges(name,deleted) VALUES ('DELETE_USER',false);          --10
 
 --roles
 
@@ -14,8 +23,24 @@ insert into roles (role,deleted) values ('ROLE_OWNER',false);
 insert into roles (role,deleted) values ('ROLE_TENANT',false);
 
 --roles-privileges
-
+--admin privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,1);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,2);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,3);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,4);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,5);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,6);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,7);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,8);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,9);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,10);
+
+--owner privileges
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,2);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,6);
+
+--tenant privileges
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,6);
 
 --user-roles
 

@@ -52,6 +52,25 @@ public class RealEstateService {
         }
     }
 
+    public void editRealEstates(Integer tenantId, List<Integer> realEstateIds, boolean adding) throws NotFoundException {
+        User tenant = userRepository.getById(tenantId);
+        if (tenant == null){
+            throw new NotFoundException("User with id " + tenantId + " not found.");
+        }
+
+        if (adding){
+            for (Integer id: realEstateIds) {
+                addTenant(id, tenantId);
+            }
+            return;
+        }
+
+        for (Integer id: realEstateIds) {
+            removeTenant(id, tenantId);
+        }
+
+    }
+
     public RealEstate addTenant(Integer realEstateId, Integer tenantId) throws NotFoundException {
         User tenant = userRepository.getById(tenantId);
         if (tenant == null){

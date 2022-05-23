@@ -12,6 +12,7 @@ import antihackerman.backendapp.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class GroupController {
     private GroupService groupService;
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('READ_GROUPS')")
     public ResponseEntity<ArrayList<GroupDTO>> getAll(){
 
         try {
@@ -42,6 +44,7 @@ public class GroupController {
     }
 
     @GetMapping("/{groupId}")
+    @PreAuthorize("hasAuthority('READ_ONE_GROUP')")
     public ResponseEntity<GroupDTO> getById(@PathVariable Integer groupId){
 
         try {
@@ -54,6 +57,7 @@ public class GroupController {
     }
 
     @GetMapping("/owners/{groupId}")
+    @PreAuthorize("hasAuthority('READ_ONE_GROUP')")
     public ResponseEntity<ArrayList<UserDTO>> getOwners(@PathVariable Integer groupId){
 
         try {
@@ -70,6 +74,7 @@ public class GroupController {
     }
 
     @GetMapping("/all-users/{groupId}")
+    @PreAuthorize("hasAuthority('READ_ONE_GROUP')")
     public ResponseEntity<ArrayList<UserDTO>> getAllUsersForGroup(@PathVariable Integer groupId){
 
         try {
@@ -86,6 +91,7 @@ public class GroupController {
     }
 
     @GetMapping("/tenants/{groupId}")
+    @PreAuthorize("hasAuthority('READ_ONE_GROUP')")
     public ResponseEntity<ArrayList<UserDTO>> getTenantsForGroup(@PathVariable Integer groupId){
 
         try {
@@ -102,6 +108,7 @@ public class GroupController {
     }
 
     @GetMapping("/real-estates/{groupId}")
+    @PreAuthorize("hasAuthority('READ_ONE_GROUP')")
     public ResponseEntity<ArrayList<RealEstateDTO>> getRealEstatesForGroup(@PathVariable Integer groupId){
 
         try {

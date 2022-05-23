@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,7 @@ public class CertificateController {
 	private CRLService crlService;
 	
 	@GetMapping("")
+	@PreAuthorize("hasAuthority('PKI_ACCESS')")
 	public ResponseEntity<List<CertificateDTO>> getAllCertificates(){
 
 		List<CertificateDTO> dtos=certService.getAllCerts();
@@ -44,6 +46,7 @@ public class CertificateController {
 	}
 	
 	@GetMapping("/{alias}")
+	@PreAuthorize("hasAuthority('PKI_ACCESS')")
 	public ResponseEntity<String> getCertificate(@PathVariable String alias){
 
 		Certificate cert=certService.getCertificateByAlias(alias);
@@ -52,6 +55,7 @@ public class CertificateController {
 	}
 	
 	@GetMapping("/validity/{alias}")
+	@PreAuthorize("hasAuthority('PKI_ACCESS')")
 	public ResponseEntity<Boolean> checkValidity(@PathVariable String alias){
 
 		boolean check=certService.checkValidityForCertificate(alias);
@@ -60,17 +64,20 @@ public class CertificateController {
 	}
 	
 	@PutMapping("/crl/reset")
+	@PreAuthorize("hasAuthority('PKI_ACCESS')")
 	public void createCRL(){
 		crlService.createCRL();
 	}
 	
 	@PostMapping("/crl/{serial}/{reason}")
+	@PreAuthorize("hasAuthority('PKI_ACCESS')")
 	public void revokeCert(@PathVariable Integer serial,@PathVariable String reason){
 		System.out.println(reason);
 		crlService.revokeCert(new BigInteger(serial.toString()),CRLReason.valueOf(reason));
 	}
 	
 	@GetMapping("/crl/{serial}")
+	@PreAuthorize("hasAuthority('PKI_ACCESS')")
 	public ResponseEntity<Boolean> checkCertRevocation(@PathVariable Integer serial){
 		boolean check=crlService.checkRevocation(new BigInteger(serial.toString()));
 		return new ResponseEntity<Boolean>(check,HttpStatus.OK);

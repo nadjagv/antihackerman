@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +27,7 @@ public class CSRController {
     CSRService csrService;
 
     @PostMapping(path = "/uploadCSR", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAuthority('PKI_ACCESS')")
     public ResponseEntity uploadCSR(@RequestParam(("file")) MultipartFile q) throws Exception {
         String csr = FileUtil.readFile(q);
         csrService.addRequest(csr);
@@ -33,6 +35,7 @@ public class CSRController {
     }
 
     @PostMapping(path = "/generateCSR")
+    @PreAuthorize("hasAuthority('PKI_ACCESS')")
     public ResponseEntity generateCSR(@RequestBody CSRdto dto) throws Exception {
         SubjectData subjectData = csrService.generateSubjectDataCSR(dto);
         csrService.generateCSR(subjectData);
@@ -40,6 +43,7 @@ public class CSRController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('PKI_ACCESS')")
     public ResponseEntity<ArrayList<CSRdto>> getAll(){
 
         try {
@@ -56,6 +60,7 @@ public class CSRController {
     }
 
     @GetMapping("/{uniqueFilename}")
+    @PreAuthorize("hasAuthority('PKI_ACCESS')")
     public ResponseEntity<CSRdto> getAll(@PathVariable String uniqueFilename){
 
         try {
@@ -68,6 +73,7 @@ public class CSRController {
     }
 
     @GetMapping("/rejectCSR/{uniqueFilename}")
+    @PreAuthorize("hasAuthority('PKI_ACCESS')")
     public ResponseEntity<String> rejectCSR(@PathVariable String uniqueFilename){
 
         try {
@@ -82,6 +88,7 @@ public class CSRController {
     }
 
     @GetMapping("/approveCSR/{uniqueFilename}")
+    @PreAuthorize("hasAuthority('PKI_ACCESS')")
     public ResponseEntity<String> approveCSR(@PathVariable String uniqueFilename){
 
         try {
@@ -96,6 +103,7 @@ public class CSRController {
     }
 
     @PostMapping("/approveCSRextensions/{uniqueFilename}")
+    @PreAuthorize("hasAuthority('PKI_ACCESS')")
     public ResponseEntity<String> approveCSRExtensions(@PathVariable String uniqueFilename, @RequestBody ArrayList<ExtensionDTO> exceptiodDTOs){
 
         try {
