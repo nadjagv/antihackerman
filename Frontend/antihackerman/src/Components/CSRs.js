@@ -32,6 +32,9 @@ function CSRs() {
   const [signModal, setSignModal] = useState(false);
   const [csrToSign, setCsrToSign] = useState("");
   const [selectedExtendsions, setSelectedExtendsions] = useState([]);
+
+  axios.defaults.withCredentials = true
+
   useEffect(() => {
     axios.get(environment.baseURL + "csr").then((response) => {
       setCsrs(response.data);

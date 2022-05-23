@@ -14,6 +14,8 @@ function NewCSR() {
   const [email, setEmail] = useState("");
   const [uid, setUid] = useState("");
 
+  axios.defaults.withCredentials = true
+
   const newCSR = () => {
     let CSR = {
       commonName: commonName,
