@@ -33,7 +33,7 @@ public class UserController {
     public ResponseEntity<ArrayList<UserDTO>> getAll(){
 
         try {
-            ArrayList<User> users = (ArrayList<User>) userService.getAll();
+            List<User> users =  userService.getAll();
             ArrayList<UserDTO> dtos = new ArrayList<>();
             for (User u: users) {
                 dtos.add(new UserDTO(u));
@@ -188,7 +188,7 @@ public class UserController {
     public ResponseEntity<ArrayList<GroupDTO>> getGroupsOwning(@PathVariable Integer userId){
 
         try {
-            ArrayList<Group> groups = (ArrayList<Group>) userService.getGroupsOwning(userId);
+            List<Group> groups = userService.getGroupsOwning(userId);
             ArrayList<GroupDTO> dtos = new ArrayList<>();
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));
@@ -205,7 +205,7 @@ public class UserController {
     public ResponseEntity<ArrayList<RealEstateDTO>> getRealestatesTenanting(@PathVariable Integer userId){
 
         try {
-            ArrayList<RealEstate> groups = (ArrayList<RealEstate>) userService.getRealestatesTenanting(userId);
+            List<RealEstate> groups = userService.getRealestatesTenanting(userId);
             ArrayList<RealEstateDTO> dtos = new ArrayList<>();
             for (RealEstate g: groups) {
                 dtos.add(new RealEstateDTO(g));

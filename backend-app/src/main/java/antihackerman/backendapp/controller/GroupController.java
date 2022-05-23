@@ -32,7 +32,7 @@ public class GroupController {
     public ResponseEntity<ArrayList<GroupDTO>> getAll(){
 
         try {
-            ArrayList<Group> groups = (ArrayList<Group>) groupService.getAll();
+            List<Group> groups = groupService.getAll();
             ArrayList<GroupDTO> dtos = new ArrayList<>();
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));
@@ -135,6 +135,23 @@ public class GroupController {
         } catch (NotUniqueException e) {
             e.printStackTrace();
             return new ResponseEntity<GroupDTO>(new GroupDTO(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/outsiders/{groupId}")
+    @PreAuthorize("hasAuthority('READ_ONE_GROUP')")
+    public ResponseEntity<ArrayList<UserDTO>> getOutsidersForGroup(@PathVariable Integer groupId){
+
+        try {
+            List<User> users = groupService.getOutsiders(groupId);
+            ArrayList<UserDTO> dtos = new ArrayList<>();
+            for (User u: users) {
+                dtos.add(new UserDTO(u));
+            }
+            return new ResponseEntity<ArrayList<UserDTO>>(dtos, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<ArrayList<UserDTO>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
     }
 }

@@ -6,6 +6,7 @@ import antihackerman.backendapp.model.Group;
 import antihackerman.backendapp.model.RealEstate;
 import antihackerman.backendapp.model.User;
 import antihackerman.backendapp.repository.GroupRepository;
+import antihackerman.backendapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,10 @@ import java.util.stream.Collectors;
 @Service
 public class GroupService {
     @Autowired
-    GroupRepository groupRep;
+    private GroupRepository groupRep;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Group> getAll (){
         return  groupRep.findAll();
@@ -118,6 +122,19 @@ public class GroupService {
                 .build();
         return groupRep.save(newGroup);
 
+    }
+
+    public List<User> getOutsiders(Integer groupId) throws NotFoundException {
+        Group group = groupRep.getById(groupId);
+        if(group==null){
+            throw new NotFoundException("Group with id "+groupId+" does not exist.");
+        }
+
+        List<User> inGroup = getAllUsersForGroup(groupId);
+        List<User> users = userRepository.findAll();
+
+        users.removeAll(inGroup);
+        return users;
     }
 
 }
