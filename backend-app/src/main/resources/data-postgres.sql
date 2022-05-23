@@ -1,7 +1,7 @@
-insert into users (deleted,username,password,email) values (false,'user1','$2a$12$XG8yzdx3RghoK0y2RnMON.gLs1ky7e/R4toD.kSCwIokZWKKdIVSW','test@gmail.com');
+insert into users (deleted,username,password,email,wrong_logins) values (false,'user1','$2a$12$XG8yzdx3RghoK0y2RnMON.gLs1ky7e/R4toD.kSCwIokZWKKdIVSW','test@gmail.com',0);
 
-insert into users (deleted,username,password,email) values (false,'user2','$2a$12$XG8yzdx3RghoK0y2RnMON.gLs1ky7e/R4toD.kSCwIokZWKKdIVSW','test2@gmail.com');
-insert into users (deleted,username,password,email) values (false,'user3','$2a$12$XG8yzdx3RghoK0y2RnMON.gLs1ky7e/R4toD.kSCwIokZWKKdIVSW','test3@gmail.com');
+insert into users (deleted,username,password,email,wrong_logins) values (false,'user2','$2a$12$XG8yzdx3RghoK0y2RnMON.gLs1ky7e/R4toD.kSCwIokZWKKdIVSW','test2@gmail.com',0);
+insert into users (deleted,username,password,email,wrong_logins) values (false,'user3','$2a$12$XG8yzdx3RghoK0y2RnMON.gLs1ky7e/R4toD.kSCwIokZWKKdIVSW','test3@gmail.com',0);
 
 --privileges
 

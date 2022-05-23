@@ -50,6 +50,9 @@ public class User implements UserDetails{
 	
 	@Column(name = "password", nullable = false)
 	private String password;
+	
+	@Column(name = "wrong_logins", nullable = false)
+	private Integer wrongLogins;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "users_groups_owning",
@@ -104,6 +107,9 @@ public class User implements UserDetails{
 
 	@Override
 	public boolean isAccountNonLocked() {
+		if(this.wrongLogins>4) {
+			return false;
+		}
 		return true;
 	}
 

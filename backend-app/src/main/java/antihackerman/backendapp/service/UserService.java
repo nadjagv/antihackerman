@@ -41,6 +41,10 @@ public class UserService {
     public List<User> getAll (){
         return userRep.findAll();
     }
+    
+    public void saveUser(User user) {
+    	userRep.save(user);
+    }
 
     public User getUserById(Integer id) throws NotFoundException {
         User result = userRep.getById(id);
@@ -150,6 +154,7 @@ public class UserService {
                 .realestatesTenanting(realestates_tenanting)
                 .roles(roles)
                 .deleted(false)
+                .wrongLogins(0)
                 .lastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
 
