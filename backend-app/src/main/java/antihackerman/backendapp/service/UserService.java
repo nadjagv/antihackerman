@@ -14,6 +14,7 @@ import antihackerman.backendapp.repository.RoleRepository;
 import antihackerman.backendapp.repository.UserRepository;
 import antihackerman.backendapp.util.InputValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -140,11 +141,11 @@ public class UserService {
             }
             roles.add(role);
         }
-
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User newUser = User.builder()
                 .username(registrationDTO.getUsername())
                 .email(registrationDTO.getEmail())
-                .password(registrationDTO.getPassword())
+                .password(passwordEncoder.encode(registrationDTO.getPassword()))
                 .groupsOwning(groups_owning)
                 .realestatesTenanting(realestates_tenanting)
                 .roles(roles)
