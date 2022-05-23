@@ -6,7 +6,9 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "realestates")
@@ -39,6 +41,6 @@ public class RealEstate {
     private Group group;
 
     @ManyToMany(mappedBy = "realestatesTenanting", fetch = FetchType.LAZY)
-    private List<User> tenants=new ArrayList<User>();
+    private Set<User> tenants=new HashSet<>();
 
 }

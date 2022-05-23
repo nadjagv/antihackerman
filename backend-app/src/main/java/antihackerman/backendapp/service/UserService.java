@@ -153,4 +153,55 @@ public class UserService {
         return userRep.save(newUser);
     }
 
+
+
+    public User changeRole(Integer groupId, Integer userId, String roleStr) throws NotFoundException {
+        Group group = groupRepository.getById(groupId);
+        if(group==null){
+            throw new NotFoundException("Group with id "+groupId+" does not exist.");
+        }
+
+        User user = userRep.getById(userId);
+        if(user==null){
+            throw new NotFoundException("User with id "+userId+" does not exist.");
+        }
+
+        Role role = roleRepository.findOneByRole(roleStr);
+        if(role==null){
+            throw new NotFoundException("Role with name "+roleStr+" does not exist.");
+        }
+
+        if (role.getRole().contentEquals("ROLE_TENANT")){
+
+            user.getGroupsOwning().remove(group);
+            /////////////
+            if (user.getGroupsOwning().isEmpty()){
+                user.getRoles().remove(roleRepository.findOneByRole("ROLE_OWNER"));
+            }
+            /////////////////
+
+            for (RealEstate r: group.getRealEstates() ) {
+                user.getRealestatesTenanting().add(r);
+            }
+
+            groupRepository.save(group);
+            return userRep.save(user);
+
+
+        }else if (role.getRole().contentEquals("ROLE_OWNER")){
+            user.getGroupsOwning().add(group);
+            group.getOwners().add(user);
+
+            Role tenantRole = roleRepository.findOneByRole("ROLE_TENANT");
+            user.getRoles().add(role);
+            user.getRoles().add(tenantRole);
+
+            user.setRoles(user.getRoles().stream().distinct().collect(Collectors.toList()));
+            groupRepository.save(group);
+            return userRep.save(user);
+        }
+
+        return null;
+    }
+
 }

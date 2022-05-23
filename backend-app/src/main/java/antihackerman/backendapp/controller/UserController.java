@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 
 @CrossOrigin(origins = {"http://localhost:3000/" })
@@ -102,6 +103,36 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.CONFLICT);
         } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/to-owner/{userId}/{groupId}")
+    public ResponseEntity<UserDTO> changeToOwner(@PathVariable Integer userId, @PathVariable Integer groupId){
+
+        try {
+            User user = userService.changeRole(groupId, userId, "ROLE_OWNER");
+            return new ResponseEntity<UserDTO>(new UserDTO(user), HttpStatus.OK);
+        }  catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/to-tenant/{userId}/{groupId}")
+    public ResponseEntity<UserDTO> changeToTenant(@PathVariable Integer userId, @PathVariable Integer groupId){
+
+        try {
+            User user = userService.changeRole(groupId, userId, "ROLE_TENANT");
+            return new ResponseEntity<UserDTO>(new UserDTO(user), HttpStatus.OK);
+        }  catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<UserDTO>(new UserDTO(), HttpStatus.BAD_REQUEST);
         }
