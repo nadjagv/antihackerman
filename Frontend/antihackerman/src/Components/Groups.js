@@ -7,8 +7,10 @@ import {
   TableRow,
   Button,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import environment from "../Constants/Environment";
+import axios from "axios";
 
 const testGroups = [
   { name: "Hajduci", id: 1 },
@@ -19,9 +21,14 @@ const testGroups = [
 ];
 
 function Groups() {
-  const [groups, setGroups] = useState(testGroups);
-  console.log(groups);
+  const [groups, setGroups] = useState([]);
   const navigation = useNavigate();
+
+  useEffect(() => {
+    axios.get(environment.baseURL + "groups").then((response) => {
+      setGroups(response.data);
+    });
+  }, []);
   return (
     <TableContainer>
       <Table>

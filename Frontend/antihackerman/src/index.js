@@ -11,7 +11,6 @@ axios.interceptors.request.use((request) => {
   if (user) {
     request.headers.Authorization = "Bearer " + user.accessToken;
   }
-  console.log(request);
   return request;
 });
 
