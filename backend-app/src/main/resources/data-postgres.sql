@@ -5,7 +5,7 @@ insert into users (deleted,username,password,email,wrong_logins) values (false,'
 
 --privileges
 
-insert into privileges(name,deleted) VALUES ('PKI_ACCESS',false);                 --1
+insert into privileges(name,deleted) VALUES ('PKI_ACCESS',false);           --1
 insert into privileges(name,deleted) VALUES ('READ_ONE_GROUP',false);       --2
 insert into privileges(name,deleted) VALUES ('READ_GROUPS',false);          --3
 insert into privileges(name,deleted) VALUES ('CREATE_REALESTATE',false);    --4
@@ -16,7 +16,7 @@ insert into privileges(name,deleted) VALUES ('REGISTER_USER',false);        --8
 insert into privileges(name,deleted) VALUES ('EDIT_USER',false);            --9
 insert into privileges(name,deleted) VALUES ('DELETE_USER',false);          --10
 insert into privileges(name,deleted) VALUES ('CREATE_CSR',false);           --11
-insert into privileges(name,deleted) VALUES ('CREATE_GROUP',false);          --12
+insert into privileges(name,deleted) VALUES ('CREATE_GROUP',false);         --12
 insert into privileges(name,deleted) VALUES ('DELETE_REALESTATE',false);    --13
 
 --roles
@@ -69,4 +69,6 @@ INSERT INTO USERS_GROUPS_OWNING(user_id, group_id) VALUES (2, 1);
 INSERT INTO USERS_GROUPS_OWNING(user_id, group_id) VALUES (3, 2);
 
 INSERT INTO USERS_REALESTATES_TENANTING(user_id, realestate_id) VALUES (2, 3);
+
+INSERT INTO USERS_GROUPS_TENANTING(user_id, group_id) VALUES (2, 2);
 

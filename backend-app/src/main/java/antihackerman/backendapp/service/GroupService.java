@@ -75,10 +75,8 @@ public class GroupService {
             }
 
             result.addAll(group.getOwners());
+            result.addAll(group.getTenants());
 
-            group.getRealEstates().stream().forEach(realEstate -> {
-                result.addAll(realEstate.getTenants());
-            });
 
             return result.stream().distinct().collect(Collectors.toList());
         }catch (Exception e){
@@ -97,9 +95,7 @@ public class GroupService {
                 throw new NotFoundException("Group with id "+groupId+" does not exist.");
             }
 
-            group.getRealEstates().stream().forEach(realEstate -> {
-                result.addAll(realEstate.getTenants());
-            });
+            result.addAll(group.getTenants());
 
             return result.stream().distinct().collect(Collectors.toList());
         }catch (Exception e){

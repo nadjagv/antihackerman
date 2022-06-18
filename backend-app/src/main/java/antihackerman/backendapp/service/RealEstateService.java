@@ -85,6 +85,7 @@ public class RealEstateService {
         tenant.getRoles().add(roleRepository.findOneByRole("ROLE_TENANT"));
         tenant.setRoles(tenant.getRoles().stream().distinct().collect(Collectors.toList()));
         tenant.getRealestatesTenanting().add(realEstate);
+        tenant.getGroupsTenanting().add(realEstate.getGroup());
         userRepository.save(tenant);
 
         realEstate.getTenants().add(tenant);
@@ -101,7 +102,20 @@ public class RealEstateService {
         if (realEstate == null){
             throw new NotFoundException("User with id " + realEstateId + " not found.");
         }
+        Group group = realEstate.getGroup();
+
         tenant.getRealestatesTenanting().remove(realEstate);
+
+        boolean remainInGroup = false;
+        for (RealEstate re: tenant.getRealestatesTenanting()) {
+            if (re.getGroup().getId() == group.getId())
+                remainInGroup = true;
+        }
+
+        if(!remainInGroup){
+            tenant.getGroupsTenanting().remove(group);
+        }
+
         if (tenant.getRealestatesTenanting().isEmpty() && tenant.getGroupsOwning().isEmpty()){
             tenant.getRoles().remove(roleRepository.findOneByRole("ROLE_TENANT"));
             tenant.getRoles().remove(roleRepository.findOneByRole("ROLE_OWNER"));
@@ -121,7 +135,25 @@ public class RealEstateService {
         }
 
         for (User tenant: realEstate.getTenants()) {
+            Group group = realEstate.getGroup();
+
             tenant.getRealestatesTenanting().remove(realEstate);
+
+            boolean remainInGroup = false;
+            for (RealEstate re: tenant.getRealestatesTenanting()) {
+                if (re.getGroup().getId() == group.getId())
+                    remainInGroup = true;
+            }
+
+            if(!remainInGroup){
+                tenant.getGroupsTenanting().remove(group);
+            }
+
+            if (tenant.getRealestatesTenanting().isEmpty() && tenant.getGroupsOwning().isEmpty()){
+                tenant.getRoles().remove(roleRepository.findOneByRole("ROLE_TENANT"));
+                tenant.getRoles().remove(roleRepository.findOneByRole("ROLE_OWNER"));
+            }
+
             userRepository.save(tenant);
         }
 

@@ -118,6 +118,9 @@ public class UserService {
             found.getRealestatesTenanting().remove(re);
         }
 
+        found.getGroupsTenanting().remove(group);
+        group.getTenants().remove(found);
+
         groupRepository.save(group);
         userRep.save(found);
     }
@@ -141,6 +144,7 @@ public class UserService {
         }
 
         Set<Group> groups_owning = new HashSet<>();
+        Set<Group> groups_tenanting = new HashSet<>();
         Set<RealEstate> realestates_tenanting = new HashSet<RealEstate>();
         List<Role> roles = new ArrayList<Role>();
 
@@ -151,7 +155,16 @@ public class UserService {
             }
             groups_owning.add(group);
 
-            registrationDTO.getRoles().add("ROLE_TENANT");
+            //registrationDTO.getRoles().add("ROLE_TENANT");
+        }
+
+        if (registrationDTO.getRoles().contains("ROLE_TENANT")){
+            Group group = groupRepository.getById(registrationDTO.getGroupId());
+            if(group==null){
+                throw new NotFoundException("Group with id "+registrationDTO.getGroupId()+" does not exist.");
+            }
+            groups_tenanting.add(group);
+
         }
 
         if (registrationDTO.getRoles().contains("ROLE_TENANT") && registrationDTO.getRealestate_ids() != null){
@@ -180,6 +193,7 @@ public class UserService {
                 .email(registrationDTO.getEmail())
                 .password(passwordEncoder.encode(registrationDTO.getPassword()))
                 .groupsOwning(groups_owning)
+                .groupsTenanting(groups_tenanting)
                 .realestatesTenanting(realestates_tenanting)
                 .roles(roles)
                 .deleted(false)
@@ -223,6 +237,7 @@ public class UserService {
                 }
                 user.getRealestatesTenanting().add(realEstate);
             }
+            user.getGroupsTenanting().add(group);
 
             groupRepository.save(group);
             return userRep.save(user);

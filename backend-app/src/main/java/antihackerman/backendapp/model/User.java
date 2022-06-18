@@ -58,6 +58,12 @@ public class User implements UserDetails{
 	private Set<Group> groupsOwning =new HashSet<>();
 
 	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "users_groups_tenanting",
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"))
+	private Set<Group> groupsTenanting =new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "users_realestates_tenanting",
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "realestate_id", referencedColumnName = "id"))

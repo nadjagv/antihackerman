@@ -37,5 +37,8 @@ public class Group {
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RealEstate> realEstates=new ArrayList<RealEstate>();
 
+    @ManyToMany(mappedBy = "groupsTenanting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<User> tenants=new ArrayList<User>();
+
 
 }
