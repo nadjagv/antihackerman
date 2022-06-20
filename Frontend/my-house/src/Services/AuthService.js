@@ -1,7 +1,7 @@
 const testUser = { name: "Hajduk", surname: "Dusan" };
 
 const getUser = () => {
-  sessionStorage.setItem("user", JSON.stringify(testUser));
+  //sessionStorage.setItem("user", JSON.stringify(testUser));
   const user = JSON.parse(sessionStorage.getItem("user"));
   return user;
 };
