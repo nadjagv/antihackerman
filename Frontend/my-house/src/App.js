@@ -8,9 +8,11 @@ import {
 } from "react-router-dom";
 import Home from "./Components/Home";
 import Group from "./Components/Group";
+import Object from "./Components/Object";
 import Groups from "./Components/Groups";
 import Login from "./Components/Login";
 import AuthService from "./Services/AuthService";
+import Device from "./Components/Device";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -50,6 +52,24 @@ function App() {
             element={
               <ProtectedRoute>
                 <Group />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/object/:id"
+            element={
+              <ProtectedRoute>
+                <Object />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/device/:id"
+            element={
+              <ProtectedRoute>
+                <Device />
               </ProtectedRoute>
             }
           ></Route>

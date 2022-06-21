@@ -24,7 +24,7 @@ const testGroups = [
 ];
 
 function Groups() {
-  const [groups, setGroups] = useState([]);
+  const [groups, setGroups] = useState(testGroups);
   const navigation = useNavigate();
 
   axios.defaults.withCredentials = true;
@@ -44,7 +44,7 @@ function Groups() {
             <TableRow>
               <TableCell>Group name</TableCell>
               <TableCell>Group ID</TableCell>
-              <TableCell>View</TableCell>
+              <TableCell>View group</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -60,7 +60,7 @@ function Groups() {
                     variant="contained"
                     color="success"
                   >
-                    Manage Group
+                    View
                   </Button>
                 </TableCell>
               </TableRow>

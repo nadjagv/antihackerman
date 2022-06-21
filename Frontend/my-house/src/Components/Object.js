@@ -21,14 +21,14 @@ import Header from "./Header";
 import AuthService from "../Services/AuthService";
 
 const testObjects = [
-  { name: "Grbavica", id: 1 },
-  { name: "Detelinara", id: 2 },
+  { name: "rerna", id: 1 },
+  { name: "cistac vazduha", id: 2 },
 ];
 
-function Group() {
+function Object() {
   const navigation = useNavigate();
   const { id } = useParams();
-  const [objects, setObjects] = useState(testObjects);
+  const [devices, setDevices] = useState(testObjects);
 
   axios.defaults.withCredentials = true;
 
@@ -42,19 +42,17 @@ function Group() {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell>Location</TableCell>
-                <TableCell>View devices</TableCell>
+                <TableCell>View device</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {objects.map((o) => (
-                <TableRow key={o.id}>
-                  <TableCell>{o.name}</TableCell>
-                  <TableCell>{o.location}</TableCell>
+              {devices.map((d) => (
+                <TableRow key={d.id}>
+                  <TableCell>{d.name}</TableCell>
                   <TableCell>
                     <Button
                       onClick={() => {
-                        navigation("/object/" + o.id);
+                        navigation("/device/" + d.id);
                       }}
                       variant="contained"
                       color="success"
@@ -71,4 +69,4 @@ function Group() {
     </div>
   );
 }
-export default Group;
+export default Object;

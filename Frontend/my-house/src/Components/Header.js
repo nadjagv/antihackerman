@@ -64,18 +64,7 @@ function Header(props) {
     return (
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
-          <Toolbar>
-            <Typography
-              color="inherit"
-              variant="h6"
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              <Link style={{ textDecoration: "none" }} to="/newCSR">
-                New CSR
-              </Link>
-            </Typography>
-          </Toolbar>
+          <Toolbar></Toolbar>
         </AppBar>
       </Box>
     );
