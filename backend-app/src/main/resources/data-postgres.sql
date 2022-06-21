@@ -18,6 +18,8 @@ insert into privileges(name,deleted) VALUES ('DELETE_USER',false);          --10
 insert into privileges(name,deleted) VALUES ('CREATE_CSR',false);           --11
 insert into privileges(name,deleted) VALUES ('CREATE_GROUP',false);         --12
 insert into privileges(name,deleted) VALUES ('DELETE_REALESTATE',false);    --13
+insert into privileges(name,deleted) VALUES ('READ_REALESTATES_USER',false);--14
+insert into privileges(name,deleted) VALUES ('READ_GROUPS_USER',false);     --15
 
 --roles
 
@@ -40,15 +42,21 @@ insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,10);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,11);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,12);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,13);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,14);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,15);
 
 --owner privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,2);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,6);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,11);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,14);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,15);
 
 --tenant privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,6);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,11);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,14);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,15);
 
 --user-roles
 
