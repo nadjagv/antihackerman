@@ -19,7 +19,7 @@ public class BackendAppMyhouseApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-				.allowedOrigins("http://localhost:3010")
+				.allowedOrigins("https://localhost:3010")
 				.allowedMethods("*")
 				.allowedHeaders("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization")
 				.allowCredentials(true);
