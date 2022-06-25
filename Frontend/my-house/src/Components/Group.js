@@ -19,6 +19,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import AuthService from "../Services/AuthService";
+import environment from "../Constants/Environment";
 
 const testObjects = [
   { name: "Grbavica", id: 1 },
@@ -28,11 +29,23 @@ const testObjects = [
 function Group() {
   const navigation = useNavigate();
   const { id } = useParams();
-  const [objects, setObjects] = useState(testObjects);
+  const [objects, setObjects] = useState([]);
 
   axios.defaults.withCredentials = true;
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    axios
+      .get(
+        environment.baseURL +
+          "real-estates/" +
+          id +
+          "/" +
+          AuthService.getUser().username
+      )
+      .then((response) => {
+        setObjects(response.data);
+      });
+  }, []);
   return (
     <div>
       <Header user={AuthService.getUser()}></Header>

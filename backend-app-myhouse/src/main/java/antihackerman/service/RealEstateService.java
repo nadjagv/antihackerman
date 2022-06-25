@@ -47,4 +47,27 @@ public class RealEstateService {
 
 
     }
+    
+    public Set<RealEstate> getAllForUserAndGroup(Integer groupId, String username) throws NotFoundException {
+        Group group = groupRepository.getById(groupId);
+        if (group == null){
+            throw new NotFoundException("Group with id " + groupId + " not found.");
+        }
+
+        User user = userRepository.findOneByUsername(username);
+        if (user == null){
+            throw new NotFoundException("User with username " + username + " not found.");
+        }
+
+        Set<RealEstate> allInGroup = new HashSet<RealEstate>(group.getRealEstates());
+
+        if (group.getOwners().contains(user)){
+            return allInGroup;
+        }
+
+        allInGroup.retainAll(user.getRealestatesTenanting());
+        return allInGroup;
+
+
+    }
 }

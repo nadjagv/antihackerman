@@ -35,6 +35,20 @@ public class GroupService {
 
         return result.stream().distinct().collect(Collectors.toSet());
     }
+    
+    public Set<Group> getAllForUserByUsername(String username) throws NotFoundException {
+        User user = userRepository.findOneByUsername(username);
+        if (user == null){
+            throw new NotFoundException("User with username " + username + " not found.");
+        }
+
+        Set<Group> result = new HashSet<>();
+
+        result.addAll(user.getGroupsOwning());
+        result.addAll(user.getGroupsTenanting());
+
+        return result.stream().distinct().collect(Collectors.toSet());
+    }
 
     public Set<Group> getOwnedForUser(Integer id) throws NotFoundException {
         User user = userRepository.getById(id);

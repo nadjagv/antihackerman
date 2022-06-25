@@ -20,12 +20,12 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/{username}")
     @PreAuthorize("hasAuthority('READ_GROUPS_USER')")
-    public ResponseEntity<ArrayList<GroupDTO>> getForUser(@PathVariable Integer userId){
+    public ResponseEntity<ArrayList<GroupDTO>> getForUserByUsername(@PathVariable String username){
 
         try {
-            Set<Group> groups = groupService.getAllForUser(userId);
+            Set<Group> groups = groupService.getAllForUserByUsername(username);
             ArrayList<GroupDTO> dtos = new ArrayList<>();
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));

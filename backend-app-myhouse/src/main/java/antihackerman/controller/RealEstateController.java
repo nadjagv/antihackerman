@@ -19,12 +19,12 @@ public class RealEstateController {
     @Autowired
     private RealEstateService realEstateService;
 
-    @GetMapping("/{groupId}/{userId}")
+    @GetMapping("/{groupId}/{username}")
     @PreAuthorize("hasAuthority('READ_REALESTATES_USER')")
-    public ResponseEntity<ArrayList<RealEstateDTO>> getRealEstatesForUserAndGroup(@PathVariable Integer groupId, @PathVariable Integer userId){
+    public ResponseEntity<ArrayList<RealEstateDTO>> getRealEstatesForUserAndGroup(@PathVariable Integer groupId, @PathVariable String username){
 
         try {
-            Set<RealEstate> realEstates = realEstateService.getAllForUserAndGroup(groupId, userId);
+            Set<RealEstate> realEstates = realEstateService.getAllForUserAndGroup(groupId, username);
             ArrayList<RealEstateDTO> dtos = new ArrayList<>();
             for (RealEstate r: realEstates) {
                 dtos.add(new RealEstateDTO(r));

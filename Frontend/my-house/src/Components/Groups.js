@@ -24,15 +24,17 @@ const testGroups = [
 ];
 
 function Groups() {
-  const [groups, setGroups] = useState(testGroups);
+  const [groups, setGroups] = useState([]);
   const navigation = useNavigate();
 
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
-    axios.get(environment.baseURL + "groups").then((response) => {
-      setGroups(response.data);
-    });
+    axios
+      .get(environment.baseURL + "groups/" + AuthService.getUser().username)
+      .then((response) => {
+        setGroups(response.data);
+      });
   }, []);
 
   return (
