@@ -25,6 +25,14 @@ public class RealEstateService {
     @Autowired
     private UserRepository userRepository;
 
+    public RealEstate getById(Integer id) throws NotFoundException {
+        RealEstate realEstate = realEstateRepository.getById(id);
+        if (realEstate == null){
+            throw new NotFoundException("Real Estate with id " + id + " not found.");
+        }
+        return realEstate;
+    }
+
     public Set<RealEstate> getAllForUserAndGroup(Integer groupId, Integer userId) throws NotFoundException {
         Group group = groupRepository.getById(groupId);
         if (group == null){

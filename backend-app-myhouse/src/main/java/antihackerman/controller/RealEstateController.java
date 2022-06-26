@@ -1,6 +1,7 @@
 package antihackerman.controller;
 
 import antihackerman.dto.RealEstateDTO;
+import antihackerman.exceptions.NotFoundException;
 import antihackerman.model.RealEstate;
 import antihackerman.service.RealEstateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,19 @@ public class RealEstateController {
             e.printStackTrace();
             return new ResponseEntity<ArrayList<RealEstateDTO>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('READ_REALESTATE')")
+    public ResponseEntity<RealEstateDTO> getOne(@PathVariable Integer id){
+
+        try {
+            RealEstate realEstate = realEstateService.getById(id);
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(realEstate), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.NOT_FOUND);
+        }
+
     }
 }

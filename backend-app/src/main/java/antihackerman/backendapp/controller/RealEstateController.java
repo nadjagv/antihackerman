@@ -1,8 +1,10 @@
 package antihackerman.backendapp.controller;
 
+import antihackerman.backendapp.dto.DeviceDTO;
 import antihackerman.backendapp.dto.RealEstateDTO;
 import antihackerman.backendapp.dto.UserDTO;
 import antihackerman.backendapp.exception.NotFoundException;
+import antihackerman.backendapp.model.Device;
 import antihackerman.backendapp.model.RealEstate;
 import antihackerman.backendapp.model.User;
 import antihackerman.backendapp.service.RealEstateService;
@@ -20,6 +22,20 @@ import java.util.List;
 public class RealEstateController {
     @Autowired
     private RealEstateService realEstateService;
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('READ_REALESTATE')")
+    public ResponseEntity<RealEstateDTO> getOne(@PathVariable Integer id){
+
+        try {
+            RealEstate realEstate = realEstateService.getById(id);
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(realEstate), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<RealEstateDTO>(new RealEstateDTO(), HttpStatus.NOT_FOUND);
+        }
+
+    }
 
     @PostMapping()
     @PreAuthorize("hasAuthority('CREATE_REALESTATE')")
