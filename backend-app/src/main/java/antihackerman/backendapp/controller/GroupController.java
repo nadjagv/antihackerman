@@ -5,20 +5,28 @@ import antihackerman.backendapp.dto.GroupDTO;
 import antihackerman.backendapp.dto.RealEstateDTO;
 import antihackerman.backendapp.dto.UserDTO;
 import antihackerman.backendapp.exception.NotUniqueException;
+import antihackerman.backendapp.logs.Log;
+import antihackerman.backendapp.logs.LogType;
+import antihackerman.backendapp.logs.LogsRepository;
 import antihackerman.backendapp.model.CSR;
 import antihackerman.backendapp.model.Group;
 import antihackerman.backendapp.model.RealEstate;
 import antihackerman.backendapp.model.User;
 import antihackerman.backendapp.service.GroupService;
+import antihackerman.backendapp.util.TokenUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 @CrossOrigin(origins = {"http://localhost:3000/" })
 @RestController
@@ -26,10 +34,16 @@ import java.util.Set;
 public class GroupController {
     @Autowired
     private GroupService groupService;
+    
+    @Autowired
+	private LogsRepository logRepository;
+    
+    @Autowired
+	private TokenUtils tokenUtils;
 
     @GetMapping()
     @PreAuthorize("hasAuthority('READ_GROUPS')")
-    public ResponseEntity<ArrayList<GroupDTO>> getAll(){
+    public ResponseEntity<ArrayList<GroupDTO>> getAll(@RequestHeader (name="Authorization") String token, HttpServletRequest request){
 
         try {
             List<Group> groups = groupService.getAll();
@@ -37,6 +51,12 @@ public class GroupController {
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));
             }
+            
+            String username=tokenUtils.getUsernameFromToken(token.substring(7));
+            
+            Log log=new Log(LogType.INFO, username, request.getRemoteAddr(), "User: "+username+" collected all groups.");
+            logRepository.insert(log);
+            
             return new ResponseEntity<ArrayList<GroupDTO>>(dtos, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
