@@ -10,6 +10,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Set;
 
 @Entity
 @Table(name = "interval_devices")
@@ -22,21 +23,12 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 public class IntervalDevice extends Device{
-    @Column(name = "max_value", nullable = false)
-    private Double maxValue;
-
-    @Column(name = "min_value", nullable = false)
-    private Double minValue;
-
-    @Column(name = "type", nullable = false)
-    private IntervalDeviceType type;
+    @Column(name = "value_definition", nullable = false)
+    private String valueDefinition;
 
     @Builder
-
-    public IntervalDevice(Integer id, boolean deleted, String name, String filePath, String filter, Integer readIntervalMils, RealEstate realEstate, Double maxValue, Double minValue, IntervalDeviceType type) {
-        super(id, deleted, name, filePath, filter, readIntervalMils, realEstate);
-        this.maxValue = maxValue;
-        this.minValue = minValue;
-        this.type = type;
+    public IntervalDevice(Integer id, boolean deleted, String name, String filePath, String filter, Integer readIntervalMils, DeviceType type, RealEstate realEstate, Set<DeviceAlarm> alarms, String valueDefinition) {
+        super(id, deleted, name, filePath, filter, readIntervalMils, type, realEstate, alarms);
+        this.valueDefinition = valueDefinition;
     }
 }

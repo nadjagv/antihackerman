@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import lombok.*;
 
 import javax.persistence.Column;
+import java.util.Set;
 
 @Entity
 @Table(name = "boolean_devices")
@@ -34,15 +35,11 @@ public class BooleanDevice extends Device{
     @Column(name = "active_false_str", nullable = false)
     private String activeFalseStr;
 
-    @Column(name = "type", nullable = false)
-    private BooleanDeviceType type;
-
     @Builder
-    public BooleanDevice(Integer id, boolean deleted, String name, String filePath, String filter, Integer readIntervalMils, RealEstate realEstate, boolean active, String activeTrueStr, String activeFalseStr, BooleanDeviceType type) {
-        super(id, deleted, name, filePath, filter, readIntervalMils, realEstate);
+    public BooleanDevice(Integer id, boolean deleted, String name, String filePath, String filter, Integer readIntervalMils, DeviceType type, RealEstate realEstate, Set<DeviceAlarm> alarms, boolean active, String activeTrueStr, String activeFalseStr) {
+        super(id, deleted, name, filePath, filter, readIntervalMils, type, realEstate, alarms);
         this.active = active;
         this.activeTrueStr = activeTrueStr;
         this.activeFalseStr = activeFalseStr;
-        this.type = type;
     }
 }

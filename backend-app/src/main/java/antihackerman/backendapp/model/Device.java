@@ -5,6 +5,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "devices")
@@ -38,8 +40,14 @@ public class Device {
     @Column(name = "read_interval_mils", nullable = false)
     private Integer readIntervalMils;
 
+    @Column(name = "type", nullable = false)
+    private DeviceType type;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private RealEstate realEstate;
+
+    @OneToMany(mappedBy = "device", fetch = FetchType.LAZY)
+    private Set<DeviceAlarm> alarms=new HashSet<>();
 
 
 }
