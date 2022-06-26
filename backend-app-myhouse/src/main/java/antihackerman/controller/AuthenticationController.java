@@ -2,6 +2,7 @@ package antihackerman.controller;
 
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import antihackerman.dto.JwtAuthenticationRequest;
 import antihackerman.dto.UserTokenState;
 import antihackerman.exceptions.NotFoundException;
+import antihackerman.logs.Log;
+import antihackerman.logs.LogType;
+import antihackerman.logs.LogsRepository;
 import antihackerman.model.Role;
 import antihackerman.model.User;
 import antihackerman.service.BlacklistService;
@@ -44,10 +48,13 @@ public class AuthenticationController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private LogsRepository logRepository;
 
 	@PostMapping("/login")
 	public ResponseEntity<Object> createAuthenticationToken(
-			@RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
+			@RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response, HttpServletRequest request) {
 		
 		try{
 			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -71,6 +78,9 @@ public class AuthenticationController {
 	        for(Role r: user.getRoles()) {
 	        	roles.add(r.getRole());
 	        }
+	        
+	        Log log=new Log(LogType.INFO, user.getUsername(), request.getRemoteAddr(), "User: "+user.getUsername()+" has logged in.");
+	        logRepository.insert(log);
 
 			return ResponseEntity.ok().headers(headers).body(new UserTokenState(jwt, user.getUsername(), expiresIn, roles));
 		}catch(BadCredentialsException e) {
@@ -87,8 +97,11 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping("/logout")
-	public ResponseEntity<Object> logout(@RequestHeader (name="Authorization") String token){
-		System.out.println(token.substring(7));
+	public ResponseEntity<Object> logout(@RequestHeader (name="Authorization") String token, HttpServletRequest request){
+		String username=tokenUtils.getUsernameFromToken(token.substring(7));
+		
+		Log log=new Log(LogType.INFO, username, request.getRemoteAddr(), "User: "+username+" has logged out.");
+        logRepository.insert(log);
 		this.blacklistService.save(token.substring(7));
 		return new ResponseEntity<Object>(null,HttpStatus.OK);
 	}
