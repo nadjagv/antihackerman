@@ -79,7 +79,7 @@ public class RealEstateService {
 
         RealEstate realEstate = realEstateRepository.getById(realEstateId);
         if (realEstate == null){
-            throw new NotFoundException("User with id " + realEstateId + " not found.");
+            throw new NotFoundException("Real Estate with id " + realEstateId + " not found.");
         }
 
         tenant.getRoles().add(roleRepository.findOneByRole("ROLE_TENANT"));

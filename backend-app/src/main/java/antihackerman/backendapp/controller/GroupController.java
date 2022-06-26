@@ -147,7 +147,7 @@ public class GroupController {
 
     @PostMapping()
     @PreAuthorize("hasAuthority('CREATE_GROUP')")
-    public ResponseEntity<GroupDTO> getById(@RequestBody String name){
+    public ResponseEntity<GroupDTO> createGroup(@RequestBody String name){
 
         try {
             Group group = groupService.createGroup(name);

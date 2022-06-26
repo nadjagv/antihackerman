@@ -43,7 +43,7 @@ public class RealEstate {
     @ManyToMany(mappedBy = "realestatesTenanting", fetch = FetchType.LAZY)
     private Set<User> tenants=new HashSet<>();
 
-    @OneToMany(mappedBy = "realEstate", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "realestate", fetch = FetchType.LAZY)
     private Set<Device> devices=new HashSet<>();
 
 }

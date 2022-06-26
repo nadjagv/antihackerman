@@ -1,4 +1,4 @@
-package antihackerman.backendapp.model;
+package antihackerman.model;
 
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
