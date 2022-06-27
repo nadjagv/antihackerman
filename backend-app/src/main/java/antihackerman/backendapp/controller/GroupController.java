@@ -13,6 +13,7 @@ import antihackerman.backendapp.model.Group;
 import antihackerman.backendapp.model.RealEstate;
 import antihackerman.backendapp.model.User;
 import antihackerman.backendapp.service.GroupService;
+import antihackerman.backendapp.service.LogService;
 import antihackerman.backendapp.util.TokenUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class GroupController {
     private GroupService groupService;
     
     @Autowired
-	private LogsRepository logRepository;
+	private LogService logService;
     
     @Autowired
 	private TokenUtils tokenUtils;
@@ -54,8 +55,7 @@ public class GroupController {
             
             String username=tokenUtils.getUsernameFromToken(token.substring(7));
             
-            Log log=new Log(LogType.INFO, username, request.getRemoteAddr(), "User: "+username+" collected all groups.");
-            logRepository.insert(log);
+            logService.createLog(LogType.INFO, username, request.getRemoteAddr(), "User: "+username+" collected all groups.");
             
             return new ResponseEntity<ArrayList<GroupDTO>>(dtos, HttpStatus.OK);
         } catch (Exception e) {

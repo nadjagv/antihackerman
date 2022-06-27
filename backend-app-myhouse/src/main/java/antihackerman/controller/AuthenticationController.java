@@ -29,6 +29,7 @@ import antihackerman.logs.LogsRepository;
 import antihackerman.model.Role;
 import antihackerman.model.User;
 import antihackerman.service.BlacklistService;
+import antihackerman.service.LogService;
 import antihackerman.service.UserService;
 import antihackerman.util.TokenUtils;
 
@@ -50,7 +51,7 @@ public class AuthenticationController {
 	private UserService userService;
 	
 	@Autowired
-	private LogsRepository logRepository;
+	private LogService logService;
 
 	@PostMapping("/login")
 	public ResponseEntity<Object> createAuthenticationToken(
@@ -79,8 +80,7 @@ public class AuthenticationController {
 	        	roles.add(r.getRole());
 	        }
 	        
-	        Log log=new Log(LogType.INFO, user.getUsername(), request.getRemoteAddr(), "User: "+user.getUsername()+" has logged in.");
-	        logRepository.insert(log);
+	        logService.createLog(LogType.INFO, user.getUsername(), request.getRemoteAddr(), "User: "+user.getUsername()+" has logged in.");
 
 			return ResponseEntity.ok().headers(headers).body(new UserTokenState(jwt, user.getUsername(), expiresIn, roles));
 		}catch(BadCredentialsException e) {
@@ -100,8 +100,7 @@ public class AuthenticationController {
 	public ResponseEntity<Object> logout(@RequestHeader (name="Authorization") String token, HttpServletRequest request){
 		String username=tokenUtils.getUsernameFromToken(token.substring(7));
 		
-		Log log=new Log(LogType.INFO, username, request.getRemoteAddr(), "User: "+username+" has logged out.");
-        logRepository.insert(log);
+		logService.createLog(LogType.INFO, username, request.getRemoteAddr(), "User: "+username+" has logged out.");
 		this.blacklistService.save(token.substring(7));
 		return new ResponseEntity<Object>(null,HttpStatus.OK);
 	}
