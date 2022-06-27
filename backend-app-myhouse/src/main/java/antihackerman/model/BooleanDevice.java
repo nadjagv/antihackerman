@@ -17,11 +17,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "boolean_devices")
-@SQLDelete(sql
-        = "UPDATE boolean_devices "
-        + "SET deleted = true "
-        + "WHERE id = ?")
-@Where(clause = "deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor

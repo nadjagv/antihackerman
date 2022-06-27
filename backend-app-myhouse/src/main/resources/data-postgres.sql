@@ -87,8 +87,8 @@ INSERT INTO USERS_REALESTATES_TENANTING(user_id, realestate_id) VALUES (2, 3);
 
 INSERT INTO USERS_GROUPS_TENANTING(user_id, group_id) VALUES (2, 2);
 
-INSERT INTO DEVICES(deleted, file_path, filter, name, read_interval_mils, type, realestate_id) VALUES (false, 'path.json', 'filter', 'lamp', 2000, 0, 3);
-INSERT INTO DEVICES(deleted, file_path, filter, name, read_interval_mils, type, realestate_id) VALUES (false, 'path2.json', 'filter', 'thermometer', 3000, 1, 3);
+INSERT INTO DEVICES(deleted, file_path, filter, name, read_interval_mils, type, realestate_id) VALUES (false, 'path.json', 'true', 'lamp', 2000, 0, 3);
+INSERT INTO DEVICES(deleted, file_path, filter, name, read_interval_mils, type, realestate_id) VALUES (false, 'path2.json', '>47', 'thermometer', 3000, 1, 3);
 
 INSERT INTO BOOLEAN_DEVICES(active_false_str, active_true_str, id) VALUES ('Lamp off.', 'Lamp on.',1);
 INSERT INTO INTERVAL_DEVICES(value_definition, min_value, max_value, id) VALUES ('temperature in degrees celsius', 0, 60, 2);

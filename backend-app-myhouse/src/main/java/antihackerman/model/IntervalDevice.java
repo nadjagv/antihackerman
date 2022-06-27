@@ -14,11 +14,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "interval_devices")
-@SQLDelete(sql
-        = "UPDATE interval_devices "
-        + "SET deleted = true "
-        + "WHERE id = ?")
-@Where(clause = "deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
