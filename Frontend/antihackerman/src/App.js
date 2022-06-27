@@ -14,6 +14,9 @@ import Group from "./Components/Group";
 import Groups from "./Components/Groups";
 import Login from "./Components/Login";
 import AuthService from "./Services/AuthService";
+import Object from "./Components/Object";
+import NewAnalogDevice from "./Components/newAnalogDevice";
+import NewDigitalDevice from "./Components/newDigitalDevice";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -53,6 +56,33 @@ function App() {
             element={
               <ProtectedRoute>
                 <Group />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/object/:id"
+            element={
+              <ProtectedRoute>
+                <Object />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="object/:id/newAnalogDevice/"
+            element={
+              <ProtectedRoute>
+                <NewAnalogDevice />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="object/:id/newDigitalDevice/"
+            element={
+              <ProtectedRoute>
+                <NewDigitalDevice />
               </ProtectedRoute>
             }
           ></Route>

@@ -19,7 +19,7 @@ import axios from "axios";
 import environment from "../Constants/Environment";
 import modalStyle from "../Constants/Styles";
 import EditUser from "./EditUser";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import NewObject from "./NewObject";
 import NewUser from "./NewUser";
 import Header from "./Header";
@@ -35,6 +35,7 @@ const testObjects = [
 ];
 
 function Group() {
+  const navigation = useNavigate();
   const { id } = useParams();
   const [users, setUsers] = useState([]);
   const [objects, setObjects] = useState([]);
@@ -45,7 +46,7 @@ function Group() {
   const [userToEdit, setUserToEdit] = useState("");
   const [userToDelete, setUserToDelete] = useState("");
 
-  axios.defaults.withCredentials = true
+  axios.defaults.withCredentials = true;
 
   useEffect(() => {
     axios.get(environment.baseURL + "groups/tenants/" + id).then((response) => {
@@ -53,7 +54,7 @@ function Group() {
       usersHelper = usersHelper.map(
         (user) => (user = { ...user, roleForGroup: "Tenant" })
       );
-      setUsers(prevUsers=>[...prevUsers,...usersHelper])
+      setUsers((prevUsers) => [...prevUsers, ...usersHelper]);
     });
 
     axios.get(environment.baseURL + "groups/owners/" + id).then((response) => {
@@ -61,7 +62,7 @@ function Group() {
       usersHelper = usersHelper.map(
         (user) => (user = { ...user, roleForGroup: "Owner" })
       );
-      setUsers(prevUsers=>[...prevUsers,...usersHelper])
+      setUsers((prevUsers) => [...prevUsers, ...usersHelper]);
     });
 
     axios
@@ -72,7 +73,7 @@ function Group() {
   }, []);
 
   const handleRemoveObject = (objectId) => {
-    axios.delete(environment.baseURL+"real-estates/"+objectId)
+    axios.delete(environment.baseURL + "real-estates/" + objectId);
     window.location.reload();
   };
 
@@ -155,15 +156,16 @@ function Group() {
           >
             Create user
           </Button>
-          {false && <Button
-            variant="contained"
-            color="success"
-            onClick={() => {
-              handleAddUserModal();
-            }}
-          >
-            Add existing user
-          </Button>}
+          {false && (
+            <Button
+              variant="contained"
+              onClick={() => {
+                handleAddUserModal();
+              }}
+            >
+              Add existing user
+            </Button>
+          )}
         </Box>
         <TableContainer>
           <Table>
@@ -171,6 +173,7 @@ function Group() {
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell>Location</TableCell>
+                <TableCell>Menage Object</TableCell>
                 <TableCell>Delete</TableCell>
               </TableRow>
             </TableHead>
@@ -179,6 +182,16 @@ function Group() {
                 <TableRow>
                   <TableCell>{o.name}</TableCell>
                   <TableCell>{o.location}</TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={() => {
+                        navigation("/object/" + o.id);
+                      }}
+                      variant="contained"
+                    >
+                      Menage
+                    </Button>
+                  </TableCell>
                   <TableCell>
                     <Button
                       onClick={() => {
