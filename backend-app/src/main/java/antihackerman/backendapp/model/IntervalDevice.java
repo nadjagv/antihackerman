@@ -14,17 +14,18 @@ import java.util.Set;
 
 @Entity
 @Table(name = "interval_devices")
-@SQLDelete(sql
-        = "UPDATE interval_devices "
-        + "SET deleted = true "
-        + "WHERE id = ?")
-@Where(clause = "deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
 public class IntervalDevice extends Device{
     @Column(name = "value_definition", nullable = false)
     private String valueDefinition;
+
+    @Column(name = "max_value", nullable = false)
+    private Double maxValue;
+
+    @Column(name = "min_value", nullable = false)
+    private Double minValue;
 
     @Builder
     public IntervalDevice(Integer id, boolean deleted, String name, String filePath, String filter, Integer readIntervalMils, DeviceType type, RealEstate realEstate, Set<DeviceAlarm> alarms, String valueDefinition) {

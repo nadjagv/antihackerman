@@ -25,6 +25,7 @@ public class DeviceDTO {
     private String activeTrueStr;
     private String activeFalseStr;
     private Integer realestateId;
+    private Double maxValue, minValue;
 
     public DeviceDTO(Device d){
         this.id = d.getId();
@@ -43,6 +44,8 @@ public class DeviceDTO {
         else{
             IntervalDevice ind = (IntervalDevice) d;
             this.valueDefinition = ind.getValueDefinition();
+            this.maxValue = ind.getMaxValue();
+            this.minValue = ind.getMinValue();
         }
 
 
