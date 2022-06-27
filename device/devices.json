@@ -1,19 +1,25 @@
 {
 	"devices":[
 		{
-			"name":"Device 1",
+			"name":"Termometar",
 			"id" : 1,
-			"interval": 2
+			"filePath": "../backend-app-myhouse/src/main/resources/devices/1.json",
+			"type": "INTERVAL_DEVICE",
+			"realEstateId": 1,
+			"realEstateName": "RE1",
+			"valueDefinition" : "C",
+			"minValue": -100,
+			"maxValue": 100
 		},
 		{
-			"name":"Device 2",
+			"name":"Ulazna vrata",
 			"id" : 2,
-			"interval": 3
-		},
-		{
-			"name":"Device 3",
-			"id" : 3,
-			"interval": 2
+			"filePath": "../backend-app-myhouse/src/main/resources/devices/2.json",
+			"type": "BOOLEAN_DEVICE",
+			"realEstateId": 1,
+			"realEstateName": "RE1",
+			"activeTrueStr": "Vrata otvorena",
+			"activeFalseStr" : "Vrata zatvorena"
 		}
 	]
 }
