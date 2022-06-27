@@ -1,5 +1,5 @@
 package antihackerman.backendapp.logs;
 
 public enum LogType {
-	INFO,SUCCESS,WARRNING,ERROR
+	INFO,SUCCESS,WARNING,ERROR
 }
