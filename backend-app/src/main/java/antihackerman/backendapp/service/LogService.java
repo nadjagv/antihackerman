@@ -76,5 +76,12 @@ public class LogService {
         
         return logsRes;
 	}
+	
+	public void createLog(LogType type,String username,String ipAddress,String message) {
+		Log log=new Log(type, username, ipAddress, message);
+        logsRepository.insert(log);
+        
+        //fire alarms
+	}
 
 }
