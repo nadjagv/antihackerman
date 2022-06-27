@@ -1,5 +1,6 @@
 package antihackerman.backendapp.service;
 
+import antihackerman.backendapp.dto.DeviceConfigDTO;
 import antihackerman.backendapp.dto.DeviceDTO;
 import antihackerman.backendapp.exception.NotFoundException;
 import antihackerman.backendapp.model.*;
@@ -11,7 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class DeviceService {
@@ -82,5 +89,29 @@ public class DeviceService {
 
         deviceRepository.delete(device);
 
+    }
+    
+    public void createConfigFile() {
+    	List<BooleanDevice> booleanDevices=booleanDeviceRepository.findAll();
+    	List<IntervalDevice> intervalDevices=intervalDeviceRepository.findAll();
+    	
+    	List<DeviceConfigDTO> devices=new ArrayList<DeviceConfigDTO>();
+    	
+    	for(BooleanDevice bd: booleanDevices) {
+    		devices.add(new DeviceConfigDTO(bd));
+    	}
+    	
+    	for(IntervalDevice id: intervalDevices) {
+    		devices.add(new DeviceConfigDTO(id));
+    	}
+    	
+    	String path = "./src/main/resources/device_config.json";
+    	 
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(new File(path), devices);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

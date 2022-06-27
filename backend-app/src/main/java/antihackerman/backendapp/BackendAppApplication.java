@@ -1,9 +1,13 @@
 package antihackerman.backendapp;
 
 import antihackerman.backendapp.service.CertificateService;
+import antihackerman.backendapp.service.DeviceService;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -17,8 +21,9 @@ public class BackendAppApplication {
 
 	public static void main(String[] args){
 		Security.addProvider(new BouncyCastleProvider());
-
-		SpringApplication.run(BackendAppApplication.class, args);
+		ApplicationContext applicationContext =SpringApplication.run(BackendAppApplication.class, args);
+		DeviceService service = applicationContext.getBean(DeviceService.class);
+        service.createConfigFile();
 	}
 	
 	@Bean
