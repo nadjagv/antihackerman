@@ -17,6 +17,7 @@ import AuthService from "./Services/AuthService";
 import Object from "./Components/Object";
 import NewAnalogDevice from "./Components/newAnalogDevice";
 import NewDigitalDevice from "./Components/newDigitalDevice";
+import Logs from "./Components/Logs";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -101,6 +102,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <CSRs />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/logs"
+            element={
+              <ProtectedRoute>
+                <Logs />
               </ProtectedRoute>
             }
           ></Route>

@@ -24,6 +24,7 @@ insert into privileges(name,deleted) VALUES ('READ_DEVICE',false);    --16
 insert into privileges(name,deleted) VALUES ('CREATE_DEVICE',false);--17
 insert into privileges(name,deleted) VALUES ('DELETE_DEVICE',false);     --18
 insert into privileges(name,deleted) VALUES ('READ_REALESTATE',false);    --19
+insert into privileges(name,deleted) VALUES ('READ_LOGS',false);    --20
 
 --roles
 
@@ -52,6 +53,7 @@ insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,16);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,17);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,18);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,19);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,20);
 
 --owner privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,2);

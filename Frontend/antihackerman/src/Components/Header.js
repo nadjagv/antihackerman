@@ -69,6 +69,16 @@ function Header(props) {
               component="div"
               sx={{ flexGrow: 1 }}
             >
+              <Link style={{ textDecoration: "none" }} to="/logs">
+                Logs
+              </Link>
+            </Typography>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
               <Link style={{ textDecoration: "none" }} to="/newCSR">
                 New CSR
               </Link>
