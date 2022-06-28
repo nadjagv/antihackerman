@@ -67,7 +67,7 @@ function Object() {
                   <TableCell>
                     <Button
                       onClick={() => {
-                        //navigation("/device/" + d.id);
+                        navigation("/device/" + d.id);
                       }}
                       variant="contained"
                       color="success"

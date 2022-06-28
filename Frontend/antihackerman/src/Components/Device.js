@@ -21,23 +21,28 @@ import Header from "./Header";
 import AuthService from "../Services/AuthService";
 import environment from "../Constants/Environment";
 
-const testObjects = [
-  { name: "rerna", id: 1 },
-  { name: "cistac vazduha", id: 2 },
-];
-
-function Object() {
+function Device() {
   const navigation = useNavigate();
   const { id } = useParams();
-  const [devices, setDevices] = useState([]);
-
-  axios.defaults.withCredentials = true;
+  const [alarms, setAlarms] = useState([]);
+  const [digital, setDigital] = useState(true);
 
   useEffect(() => {
-    axios.get(environment.baseURL + "real-estates/" + id).then((response) => {
-      setDevices(response.data.devices);
+    axios.get(environment.baseURL + "devices/" + id).then((response) => {
+      setDigital(response.data.type === "INTERVAL_DEVICE" ? true : false);
     });
   }, []);
+  axios.defaults.withCredentials = true;
+
+  const handleDeleteAlarm = (alarmId) => {
+    axios
+      .delete(environment.baseURL + "device-alarms/" + alarmId)
+      .then((response) => {
+        alert("alarm deleted");
+      });
+    //window.location.reload();
+  };
+  useEffect(() => {}, []);
   return (
     <div>
       <Header user={AuthService.getUser()}></Header>
@@ -47,26 +52,28 @@ function Object() {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>View device</TableCell>
+                <TableCell>Analog activation</TableCell>
+                <TableCell>Digital minimum</TableCell>
+                <TableCell>Digital maximum</TableCell>
+                <TableCell>Delete alarm</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {devices.map((d) => (
-                <TableRow key={d.id}>
-                  <TableCell>{d.name}</TableCell>
-                  <TableCell>
-                    {d.type === "INTERVAL_DEVICE" ? "Digital" : "Analog"}
-                  </TableCell>
+              {alarms.map((a) => (
+                <TableRow>
+                  <TableCell>{a.name}</TableCell>
+                  <TableCell>{a.alarmForBool ? "1" : "0"}</TableCell>
+                  <TableCell>{a.borderMin}</TableCell>
+                  <TableCell>{a.borderMax}</TableCell>
                   <TableCell>
                     <Button
                       onClick={() => {
-                        navigation("/device/" + d.id);
+                        handleDeleteAlarm(a.id);
                       }}
                       variant="contained"
-                      color="success"
+                      color="error"
                     >
-                      View
+                      Delete
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -78,4 +85,4 @@ function Object() {
     </div>
   );
 }
-export default Object;
+export default Device;

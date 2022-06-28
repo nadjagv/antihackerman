@@ -23,7 +23,7 @@ public class DeviceController {
     public ResponseEntity<ArrayList<Message>> getMessagesForDevice(@PathVariable Integer id){
 
         try {
-            List<Message> messages = deviceService.getMessagesForDevice(1);
+            List<Message> messages = deviceService.getMessagesForDevice(id);
 
             return new ResponseEntity<ArrayList<Message>>((ArrayList<Message>) messages, HttpStatus.OK);
         } catch (Exception e) {

@@ -18,8 +18,9 @@ import Object from "./Components/Object";
 import NewAnalogDevice from "./Components/newAnalogDevice";
 import NewDigitalDevice from "./Components/newDigitalDevice";
 import Logs from "./Components/Logs";
-import {NotificationContainer} from 'react-notifications';
-import 'react-notifications/lib/notifications.css';
+import { NotificationContainer } from "react-notifications";
+import "react-notifications/lib/notifications.css";
+import Device from "./Components/Device";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -32,7 +33,7 @@ function App() {
 
   return (
     <Router>
-      <NotificationContainer/>
+      <NotificationContainer />
       <div className="App">
         <Routes>
           <Route
@@ -69,6 +70,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Object />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/device/:id"
+            element={
+              <ProtectedRoute>
+                <Device />
               </ProtectedRoute>
             }
           ></Route>
