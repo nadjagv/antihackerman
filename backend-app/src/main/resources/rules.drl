@@ -1,0 +1,8 @@
+import antihackerman.backendapp.logs.*
+
+rule "test"
+	when
+	  $log: Log(type==LogType.INFO)
+	then
+		System.out.println("Djana");
+	end

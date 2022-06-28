@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.kie.api.runtime.KieContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -30,6 +31,9 @@ import java.util.List;
 public class DeviceService {
     @Autowired
     DeviceRepository deviceRepository;
+    
+    @Autowired
+    private KieContainer kContainer;
 
     @EventListener(ApplicationReadyEvent.class)
     public void readMessages() {
@@ -41,7 +45,7 @@ public class DeviceService {
                 + separator + "devices" + separator;
         List<Device> devices = deviceRepository.findAll();
         for (Device d: devices) {
-            Runnable runnable = new MessageReader(d, devicesFolder);
+            Runnable runnable = new MessageReader(d, devicesFolder,kContainer);
             new Thread(runnable).start();
         }
     }

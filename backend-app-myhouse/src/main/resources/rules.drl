@@ -1,0 +1,8 @@
+import antihackerman.model.*
+
+rule "test"
+	when
+	  $device: Device(id==1)
+	then
+		System.out.println("Classify Transport - Request True");
+	end

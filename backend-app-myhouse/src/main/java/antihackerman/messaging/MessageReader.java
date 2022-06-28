@@ -12,6 +12,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -31,13 +33,13 @@ import java.util.InvalidPropertiesFormatException;
 public class MessageReader implements Runnable{
     private Device device;
     private String devicesDirPath;
+    
+    private final KieContainer kieContainer;
 
-    @Autowired
-    DeviceRepository deviceRepository;
-
-    public MessageReader(Device device, String path){
+    public MessageReader(Device device, String path,KieContainer kieContainer){
         this.device = device;
         this.devicesDirPath = path;
+        this.kieContainer=kieContainer;
     }
 
     @SneakyThrows
@@ -48,6 +50,11 @@ public class MessageReader implements Runnable{
 
         while(true){
             JSONParser jsonParser = new JSONParser();
+            
+            KieSession kieSession = kieContainer.newKieSession();
+            kieSession.insert(this.device);
+            kieSession.fireAllRules();
+            kieSession.dispose();
 
             try (FileReader reader = new FileReader(this.devicesDirPath + this.device.getFilePath()))
             {

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +21,9 @@ public class LogService {
 	
 	@Autowired
 	private LogsRepository logsRepository;
+	
+	@Autowired
+    private KieContainer kContainer;
 	
 	public List<Log> findAll(){
 		return logsRepository.findAll();
@@ -43,6 +48,12 @@ public class LogService {
 		
 		List<Log> logsRes=new ArrayList<Log>();
         for(Log l: logs) {
+        	
+        	KieSession kieSession = kContainer.newKieSession();
+            kieSession.insert(l);
+            kieSession.fireAllRules();
+            kieSession.dispose();
+        	
         	boolean check=true;
         	if(type!=null) {
         		if(l.getType()!=type) {
