@@ -14,6 +14,7 @@ import antihackerman.backendapp.model.RealEstate;
 import antihackerman.backendapp.model.User;
 import antihackerman.backendapp.service.GroupService;
 import antihackerman.backendapp.service.LogService;
+import antihackerman.backendapp.service.NotificationService;
 import antihackerman.backendapp.util.TokenUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class GroupController {
     
     @Autowired
 	private TokenUtils tokenUtils;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping()
     @PreAuthorize("hasAuthority('READ_GROUPS')")
@@ -52,6 +56,8 @@ public class GroupController {
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));
             }
+            
+            this.notificationService.simpleNotification("test");
             
             String username=tokenUtils.getUsernameFromToken(token.substring(7));
             

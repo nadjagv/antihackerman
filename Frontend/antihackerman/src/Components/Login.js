@@ -36,10 +36,10 @@ function Login(props) {
           navigation("/home");
         }
         else{
-          alert("Bad credentials")
+          alert("Bad role")
         }
       }).catch(error=>{
-        alert("Bad credentials")
+        alert(error)
       });
   };
 
