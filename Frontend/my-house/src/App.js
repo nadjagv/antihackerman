@@ -13,6 +13,8 @@ import Groups from "./Components/Groups";
 import Login from "./Components/Login";
 import AuthService from "./Services/AuthService";
 import Device from "./Components/Device";
+import {NotificationContainer} from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -25,6 +27,7 @@ function App() {
 
   return (
     <Router>
+      <NotificationContainer/>
       <div className="App">
         <Routes>
           <Route

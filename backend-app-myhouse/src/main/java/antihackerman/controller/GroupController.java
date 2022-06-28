@@ -3,6 +3,8 @@ package antihackerman.controller;
 import antihackerman.dto.GroupDTO;
 import antihackerman.model.Group;
 import antihackerman.service.GroupService;
+import antihackerman.service.NotificationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,9 @@ import java.util.Set;
 public class GroupController {
     @Autowired
     private GroupService groupService;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping("/{username}")
     @PreAuthorize("hasAuthority('READ_GROUPS_USER')")
@@ -30,6 +35,7 @@ public class GroupController {
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));
             }
+            this.notificationService.userNotification("test", "user2");
             return new ResponseEntity<ArrayList<GroupDTO>>(dtos, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
