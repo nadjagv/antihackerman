@@ -11,6 +11,9 @@ import antihackerman.backendapp.repository.DeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+
 @Service
 public class DeviceAlarmService {
     @Autowired
@@ -19,6 +22,14 @@ public class DeviceAlarmService {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    public Set<DeviceAlarm> getAlarmsForDevice(Integer deviceId) throws NotFoundException {
+        Device device = deviceRepository.getById(deviceId);
+        if (device == null){
+            throw new NotFoundException("Device with id " + deviceId + " not found.");
+        }
+        return device.getAlarms();
+    }
+
     public DeviceAlarm createDeviceAlarm(DeviceAlarmDTO dto) throws NotFoundException, InvalidInputException {
         Device device = deviceRepository.getById(dto.getDeviceId());
         if (device == null){
@@ -26,6 +37,7 @@ public class DeviceAlarmService {
         }
 
         //validacija
+        //TODO: provera da li je u granicama min max za interval
         if (device.getType().equals(DeviceType.INTERVAL_DEVICE) && dto.getBorderMin() == null && dto.getBorderMax() == null){
             throw new InvalidInputException("Invalid input for creating alarm - both values null.");
         }
