@@ -110,6 +110,9 @@ public class MessageReader implements Runnable{
                     	for(User u:da.getDevice().getRealestate().getTenants()) {
                     		notificationService.userNotification(msg.get("message").toString(), u.getUsername());
                     	}
+                    	for(User u:da.getDevice().getRealestate().getGroup().getOwners()) {
+                    		notificationService.userNotification(msg.get("message").toString(), u.getUsername());
+                    	}
                     }
 
                 }

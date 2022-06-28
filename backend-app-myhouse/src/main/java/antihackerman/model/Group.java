@@ -47,7 +47,7 @@ public class Group {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "groupsOwning", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "groupsOwning", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<User> owners=new ArrayList<User>();
 
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
