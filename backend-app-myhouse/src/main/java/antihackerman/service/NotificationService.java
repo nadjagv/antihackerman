@@ -5,6 +5,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import antihackerman.dto.Message;
+import antihackerman.dto.SimpleMessage;
 
 
 @Service
@@ -21,6 +22,12 @@ public class NotificationService {
     	Message message = new Message(msg,username);
 
         messagingTemplate.convertAndSend("/topic/user-notification", message);
+    }
+	
+	public void simpleNotification(String msg) {
+    	SimpleMessage message = new SimpleMessage(msg);
+
+        messagingTemplate.convertAndSend("/topic/simple-notification", message);
     }
 
 }

@@ -19,11 +19,18 @@ public class LogService {
 	@Autowired
 	private LogsRepository logsRepository;
 	
+	@Autowired
+	private NotificationService notificationService;
+	
 	
 	public void createLog(LogType type,String username,String ipAddress,String message) {
 		Log log=new Log(type, username, ipAddress, message);
         logsRepository.insert(log);
         //fire alarms
+        
+        if(type==LogType.ERROR) {
+        	notificationService.simpleNotification(message);
+        }
 	}
 
 }
