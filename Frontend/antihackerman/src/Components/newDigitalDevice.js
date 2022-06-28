@@ -15,6 +15,8 @@ function NewDigitalDevice() {
   const [filepath, setFilePath] = useState("");
   const [filter, setFilter] = useState("");
   const [valueDefinition, setValueDefinition] = useState("");
+  const [minValue, setMinValue] = useState("");
+  const [maxValue, setMaxValue] = useState("");
 
   axios.defaults.withCredentials = true;
 
@@ -27,6 +29,8 @@ function NewDigitalDevice() {
       realestateId: id,
       valueDefinition: valueDefinition,
       type: "INTERVAL_DEVICE",
+      maxValue: maxValue,
+      minValue: minValue,
     };
     axios.post(environment.baseURL + "devices", Device).then((response) => {
       console.log("success");
@@ -80,6 +84,20 @@ function NewDigitalDevice() {
               type="text"
               onChange={(e) => setValueDefinition(e.target.value)}
               value={valueDefinition}
+            />
+            <TextField
+              id="outlined-min-value-input"
+              label="Minimal value"
+              type="text"
+              onChange={(e) => setMinValue(e.target.value)}
+              value={minValue}
+            />
+            <TextField
+              id="outlined-max-value-input"
+              label="Maximum value"
+              type="text"
+              onChange={(e) => setMaxValue(e.target.value)}
+              value={maxValue}
             />
 
             <Button

@@ -21,6 +21,7 @@ import Logs from "./Components/Logs";
 import { NotificationContainer } from "react-notifications";
 import "react-notifications/lib/notifications.css";
 import Device from "./Components/Device";
+import NewAlarm from "./Components/newAlarm";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -79,6 +80,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Device />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/device/newAlarm/:id/:type"
+            element={
+              <ProtectedRoute>
+                <NewAlarm />
               </ProtectedRoute>
             }
           ></Route>

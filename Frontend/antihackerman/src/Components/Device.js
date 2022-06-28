@@ -31,6 +31,13 @@ function Device() {
     axios.get(environment.baseURL + "devices/" + id).then((response) => {
       setDigital(response.data.type === "INTERVAL_DEVICE" ? true : false);
     });
+    setDigital(true);
+
+    axios
+      .get(environment.baseURL + "device-alarms/device/" + id)
+      .then((response) => {
+        setAlarms(response.data);
+      });
   }, []);
   axios.defaults.withCredentials = true;
 
@@ -52,9 +59,12 @@ function Device() {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell>Analog activation</TableCell>
-                <TableCell>Digital minimum</TableCell>
-                <TableCell>Digital maximum</TableCell>
+                {digital ? (
+                  <TableCell>Digital minimum</TableCell>
+                ) : (
+                  <TableCell>Analog activation</TableCell>
+                )}
+                {digital ? <TableCell>Digital maximum</TableCell> : ""}
                 <TableCell>Delete alarm</TableCell>
               </TableRow>
             </TableHead>
@@ -62,9 +72,12 @@ function Device() {
               {alarms.map((a) => (
                 <TableRow>
                   <TableCell>{a.name}</TableCell>
-                  <TableCell>{a.alarmForBool ? "1" : "0"}</TableCell>
-                  <TableCell>{a.borderMin}</TableCell>
-                  <TableCell>{a.borderMax}</TableCell>
+                  {digital ? (
+                    <TableCell>{a.borderMin}</TableCell>
+                  ) : (
+                    <TableCell>{a.alarmForBool ? "1" : "0"}</TableCell>
+                  )}
+                  {digital ? <TableCell>{a.borderMax}</TableCell> : ""}
                   <TableCell>
                     <Button
                       onClick={() => {
@@ -81,6 +94,17 @@ function Device() {
             </TableBody>
           </Table>
         </TableContainer>
+        <Button
+          onClick={() => {
+            navigation(
+              "/device/newAlarm/" + id + "/" + (digital ? "digital" : "analog")
+            );
+          }}
+          variant="contained"
+          color="success"
+        >
+          New alarm
+        </Button>
       </Stack>
     </div>
   );
