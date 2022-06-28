@@ -26,7 +26,7 @@ const setUser = (user) => {
   stompClient.connect({}, (frame) => {
     stompClient.subscribe('/topic/user-notification',(message) => {
       if(user.username===JSON.parse(message.body).username){
-        NotificationManager.info(JSON.parse(message.body).content);
+        NotificationManager.error(JSON.parse(message.body).content);
       }
     });
   });

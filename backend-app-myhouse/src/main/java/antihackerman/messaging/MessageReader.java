@@ -4,8 +4,10 @@ import antihackerman.exceptions.NotFoundException;
 import antihackerman.model.Device;
 import antihackerman.model.DeviceAlarm;
 import antihackerman.model.DeviceType;
+import antihackerman.model.User;
 import antihackerman.repository.DeviceRepository;
 import antihackerman.service.DeviceService;
+import antihackerman.service.NotificationService;
 import antihackerman.util.FilterUtil;
 import lombok.SneakyThrows;
 import org.bson.json.JsonObject;
@@ -36,11 +38,14 @@ public class MessageReader implements Runnable{
     private String devicesDirPath;
     
     private final KieContainer kieContainer;
+    
+    private NotificationService notificationService;
 
-    public MessageReader(Device device, String path,KieContainer kieContainer){
+    public MessageReader(Device device, String path,KieContainer kieContainer,NotificationService notificationService){
         this.device = device;
         this.devicesDirPath = path;
         this.kieContainer=kieContainer;
+        this.notificationService=notificationService;
     }
 
     @SneakyThrows
@@ -100,6 +105,12 @@ public class MessageReader implements Runnable{
                     System.out.println("Alarms activated: "+ activatedAlarms.size());
 
                     //TODO: soketi, aktivirani alarmi su u listi activatedAlarms
+                    
+                    for(DeviceAlarm da: activatedAlarms) {
+                    	for(User u:da.getDevice().getRealestate().getTenants()) {
+                    		notificationService.userNotification(msg.get("message").toString(), u.getUsername());
+                    	}
+                    }
 
                 }
 

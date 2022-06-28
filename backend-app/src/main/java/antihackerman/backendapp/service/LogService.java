@@ -25,6 +25,9 @@ public class LogService {
 	@Autowired
     private KieContainer kContainer;
 	
+	@Autowired
+	private NotificationService notificationService;
+	
 	public List<Log> findAll(){
 		return logsRepository.findAll();
 	}
@@ -93,6 +96,9 @@ public class LogService {
         logsRepository.insert(log);
         
         //fire alarms
+        if(type==LogType.ERROR) {
+        	notificationService.simpleNotification(message);
+        }
 	}
 
 }

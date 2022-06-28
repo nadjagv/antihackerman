@@ -42,9 +42,6 @@ public class GroupController {
     
     @Autowired
 	private TokenUtils tokenUtils;
-    
-    @Autowired
-    private NotificationService notificationService;
 
     @GetMapping()
     @PreAuthorize("hasAuthority('READ_GROUPS')")
@@ -56,8 +53,6 @@ public class GroupController {
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));
             }
-            
-            this.notificationService.simpleNotification("test");
             
             String username=tokenUtils.getUsernameFromToken(token.substring(7));
             

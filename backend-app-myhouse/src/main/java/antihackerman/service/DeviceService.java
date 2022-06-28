@@ -34,6 +34,9 @@ public class DeviceService {
     
     @Autowired
     private KieContainer kContainer;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void readMessages() {
@@ -45,7 +48,7 @@ public class DeviceService {
                 + separator + "devices" + separator;
         List<Device> devices = deviceRepository.findAll();
         for (Device d: devices) {
-            Runnable runnable = new MessageReader(d, devicesFolder,kContainer);
+            Runnable runnable = new MessageReader(d, devicesFolder,kContainer,notificationService);
             new Thread(runnable).start();
         }
     }

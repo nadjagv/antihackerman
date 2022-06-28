@@ -44,7 +44,7 @@ public class RealEstate {
     @ManyToOne(fetch = FetchType.LAZY)
     private Group group;
 
-    @ManyToMany(mappedBy = "realestatesTenanting", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "realestatesTenanting", fetch = FetchType.EAGER)
     private Set<User> tenants=new HashSet<>();
 
     @OneToMany(mappedBy = "realestate", fetch = FetchType.LAZY)

@@ -25,7 +25,7 @@ const setUser = (user) => {
   stompClient.connect({}, (frame) => {
     stompClient.subscribe('/topic/simple-notification',(message) => {
       console.log(JSON.parse(message.body).content)
-      NotificationManager.info(JSON.parse(message.body).content);
+      NotificationManager.error(JSON.parse(message.body).content);
     });
   });
 };

@@ -21,9 +21,6 @@ import java.util.Set;
 public class GroupController {
     @Autowired
     private GroupService groupService;
-    
-    @Autowired
-    private NotificationService notificationService;
 
     @GetMapping("/{username}")
     @PreAuthorize("hasAuthority('READ_GROUPS_USER')")
@@ -35,7 +32,6 @@ public class GroupController {
             for (Group g: groups) {
                 dtos.add(new GroupDTO(g));
             }
-            this.notificationService.userNotification("test", "user2");
             return new ResponseEntity<ArrayList<GroupDTO>>(dtos, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();

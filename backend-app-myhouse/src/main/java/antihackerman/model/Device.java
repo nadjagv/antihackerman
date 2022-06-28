@@ -43,7 +43,7 @@ public class Device {
     @Column(name = "type", nullable = false)
     private DeviceType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private RealEstate realestate;
 
     @OneToMany(mappedBy = "device", fetch = FetchType.EAGER)
