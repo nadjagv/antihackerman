@@ -24,7 +24,7 @@ public class DeviceDTO {
     private String activeTrueStr;
     private String activeFalseStr;
     private Integer realestateId;
-    private Double maxValue, minValue;
+    private Long maxValue, minValue;
 
     public DeviceDTO(Device d){
         this.id = d.getId();

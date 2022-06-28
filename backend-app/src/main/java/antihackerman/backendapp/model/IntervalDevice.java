@@ -22,14 +22,16 @@ public class IntervalDevice extends Device{
     private String valueDefinition;
 
     @Column(name = "max_value", nullable = false)
-    private Double maxValue;
+    private Long maxValue;
 
     @Column(name = "min_value", nullable = false)
-    private Double minValue;
+    private Long minValue;
 
     @Builder
-    public IntervalDevice(Integer id, boolean deleted, String name, String filePath, String filter, Integer readIntervalMils, DeviceType type, RealEstate realEstate, Set<DeviceAlarm> alarms, String valueDefinition) {
-        super(id, deleted, name, filePath, filter, readIntervalMils, type, realEstate, alarms);
+    public IntervalDevice(Integer id, boolean deleted, String name, String filePath, String filter, Integer readIntervalMils, DeviceType type, RealEstate realestate, Set<DeviceAlarm> alarms, String valueDefinition, Long maxValue, Long minValue) {
+        super(id, deleted, name, filePath, filter, readIntervalMils, type, realestate, alarms);
         this.valueDefinition = valueDefinition;
+        this.maxValue = maxValue;
+        this.minValue = minValue;
     }
 }

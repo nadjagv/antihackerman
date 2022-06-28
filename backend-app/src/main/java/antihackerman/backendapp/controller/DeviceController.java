@@ -2,6 +2,7 @@ package antihackerman.backendapp.controller;
 
 import antihackerman.backendapp.dto.DeviceDTO;
 import antihackerman.backendapp.dto.GroupDTO;
+import antihackerman.backendapp.exception.InvalidInputException;
 import antihackerman.backendapp.exception.NotFoundException;
 import antihackerman.backendapp.exception.NotUniqueException;
 import antihackerman.backendapp.model.Device;
@@ -45,6 +46,9 @@ public class DeviceController {
         } catch (NotFoundException e) {
             e.printStackTrace();
             return new ResponseEntity<DeviceDTO>(new DeviceDTO(), HttpStatus.NOT_FOUND);
+        } catch (InvalidInputException e) {
+            e.printStackTrace();
+            return new ResponseEntity<DeviceDTO>(new DeviceDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }

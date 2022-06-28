@@ -66,13 +66,16 @@ public class MessageReader implements Runnable{
                     if ((Double)msg.get("timestamp") <= lastMsgTimestampMils){
                         continue;
                     }
-
-                    Filter f = FilterUtil.createFilter(this.device.getFilter());
-                    if (f==null){
-                        throw new InvalidPropertiesFormatException("Filter not good.");
-                    }else if (!FilterUtil.passedFilter(f, msg, this.device.getType())){
-                        continue;
+                    if (!this.device.getFilter().isEmpty()){
+                        Filter f = FilterUtil.createFilter(this.device.getFilter());
+                        if (f==null){
+                            throw new InvalidPropertiesFormatException("Filter not good.");
+                        }else if (!FilterUtil.passedFilter(f, msg, this.device.getType())){
+                            continue;
+                        }
                     }
+
+
 
                     //proveravanje alarma, prosla je filter
 

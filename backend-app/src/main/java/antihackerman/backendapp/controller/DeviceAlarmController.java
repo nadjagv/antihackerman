@@ -2,6 +2,7 @@ package antihackerman.backendapp.controller;
 
 import antihackerman.backendapp.dto.DeviceAlarmDTO;
 import antihackerman.backendapp.dto.DeviceDTO;
+import antihackerman.backendapp.exception.InvalidInputException;
 import antihackerman.backendapp.exception.NotFoundException;
 import antihackerman.backendapp.model.Device;
 import antihackerman.backendapp.model.DeviceAlarm;
@@ -30,7 +31,22 @@ public class DeviceAlarmController {
         } catch (NotFoundException e) {
             e.printStackTrace();
             return new ResponseEntity<DeviceAlarmDTO>(new DeviceAlarmDTO(), HttpStatus.NOT_FOUND);
+        } catch (InvalidInputException e) {
+            e.printStackTrace();
+            return new ResponseEntity<DeviceAlarmDTO>(new DeviceAlarmDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('CRUD_DEVICE_ALARM')")
+    public ResponseEntity<String> deleteById(@PathVariable Integer id){
+        try {
+            deviceAlarmService.deleteDeviceAlarm(id);
+            return new ResponseEntity<String>("Success", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("Device alarm not in database.", HttpStatus.NOT_FOUND);
+        }
     }
 }

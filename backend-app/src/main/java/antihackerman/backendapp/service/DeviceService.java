@@ -2,12 +2,15 @@ package antihackerman.backendapp.service;
 
 import antihackerman.backendapp.dto.DeviceConfigDTO;
 import antihackerman.backendapp.dto.DeviceDTO;
+import antihackerman.backendapp.exception.InvalidInputException;
 import antihackerman.backendapp.exception.NotFoundException;
 import antihackerman.backendapp.model.*;
 import antihackerman.backendapp.repository.BooleanDeviceRepository;
 import antihackerman.backendapp.repository.DeviceRepository;
 import antihackerman.backendapp.repository.IntervalDeviceRepository;
 import antihackerman.backendapp.repository.RealEstateRepository;
+import antihackerman.backendapp.util.FileUtil;
+import antihackerman.backendapp.util.FilterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -42,14 +45,31 @@ public class DeviceService {
         return device;
     }
 
-    public Device addDevice(DeviceDTO dto) throws NotFoundException {
+    public Device addDevice(DeviceDTO dto) throws NotFoundException, InvalidInputException {
 
         RealEstate realEstate = realEstateRepository.getById(dto.getRealestateId());
         if (realEstate == null){
             throw new NotFoundException("Real Estate with id " + dto.getRealestateId() + " not found.");
         }
 
+        dto.setFilter(FilterUtil.trimAndLower(dto.getFilter()));
+        if (!FilterUtil.isTrue(dto.getFilter())
+                && !FilterUtil.isFalse(dto.getFilter())
+                && !FilterUtil.isEqual(dto.getFilter())
+                && !FilterUtil.isLess(dto.getFilter())
+                && !FilterUtil.isGreater(dto.getFilter())
+                && !dto.getFilter().isEmpty()){
+            throw new InvalidInputException("Inavlid filter.");
+        }
+
+        if (dto.getName() == null || dto.getFilePath()==null || dto.getReadIntervalMils()==null|| dto.getType()==null){
+            throw new InvalidInputException("Missing input.");
+        }
+
         if (dto.getType().equals(DeviceType.BOOLEAN_DEVICE)){
+            if (dto.getActiveFalseStr() == null || dto.getActiveTrueStr()==null){
+                throw new InvalidInputException("Missing input.");
+            }
             BooleanDevice device = BooleanDevice.builder()
                     .deleted(false)
                     .name(dto.getName())
@@ -64,16 +84,21 @@ public class DeviceService {
                     .build();
             return booleanDeviceRepository.save(device);
         }else{
+            if (dto.getMaxValue() == null || dto.getMinValue()==null || dto.getValueDefinition()==null){
+                throw new InvalidInputException("Missing input.");
+            }
             IntervalDevice device = IntervalDevice.builder()
                     .deleted(false)
                     .name(dto.getName())
                     .alarms(new HashSet<>())
                     .filter(dto.getFilter())
                     .filePath(dto.getFilePath())
-                    .realEstate(realEstate)
+                    .realestate(realEstate)
                     .readIntervalMils(dto.getReadIntervalMils())
                     .type(DeviceType.INTERVAL_DEVICE)
                     .valueDefinition(dto.getValueDefinition())
+                    .maxValue(dto.getMaxValue())
+                    .minValue(dto.getMinValue())
                     .build();
             return intervalDeviceRepository.save(device);
         }
