@@ -2,6 +2,7 @@ package antihackerman.messaging;
 
 import antihackerman.exceptions.NotFoundException;
 import antihackerman.model.Device;
+import antihackerman.model.DeviceAlarm;
 import antihackerman.model.DeviceType;
 import antihackerman.repository.DeviceRepository;
 import antihackerman.service.DeviceService;
@@ -51,10 +52,7 @@ public class MessageReader implements Runnable{
         while(true){
             JSONParser jsonParser = new JSONParser();
             
-            KieSession kieSession = kieContainer.newKieSession();
-            kieSession.insert(this.device);
-            kieSession.fireAllRules();
-            kieSession.dispose();
+
 
             try (FileReader reader = new FileReader(this.devicesDirPath + this.device.getFilePath()))
             {
@@ -76,9 +74,29 @@ public class MessageReader implements Runnable{
                         continue;
                     }
 
-                    //TODO: proveravanje alarma, prosla je filter
+                    //proveravanje alarma, prosla je filter
+
+                    ArrayList<DeviceAlarm> activatedAlarms = new ArrayList<>();
+                    Message message = Message.builder()
+                            .message(String.valueOf(msg.get("message")))
+                            .value((Long)msg.get("value"))
+                            .timestamp(new Timestamp(Double.valueOf((Double) msg.get("timestamp")).longValue()))
+                            .build();
+                    KieSession kieSession = kieContainer.newKieSession();
+                    kieSession.insert(this.device);
+                    kieSession.insert(message);
+                    for (DeviceAlarm da: this.device.getAlarms()) {
+                        kieSession.insert(da);
+                    }
+                    kieSession.setGlobal("activatedAlarms", activatedAlarms);
+
+                    kieSession.fireAllRules();
+                    kieSession.dispose();
                     
                     System.out.println(msg.get("message"));
+                    System.out.println("Alarms activated: "+ activatedAlarms.size());
+
+                    //TODO: soketi, aktivirani alarmi su u listi activatedAlarms
 
                 }
 

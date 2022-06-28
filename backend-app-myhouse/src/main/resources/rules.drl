@@ -1,8 +1,33 @@
 import antihackerman.model.*
+import antihackerman.messaging.*
+import java.util.ArrayList;
 
-rule "test"
+global ArrayList<DeviceAlarm> activatedAlarms;
+
+rule "Is boolean alarm triggered - true"
 	when
-	  $device: Device(id==1)
+	  $device: Device(type == DeviceType.BOOLEAN_DEVICE)
+	  $message: Message(value==1)
+	  $alarm: DeviceAlarm(alarmForBool==true)
 	then
-		System.out.println("Classify Transport - Request True");
+		activatedAlarms.add($alarm);
+	end
+
+rule "Is boolean alarm triggered - false"
+	when
+	  $device: Device(type == DeviceType.BOOLEAN_DEVICE)
+	  $message: Message(value==0)
+	  $alarm: DeviceAlarm(alarmForBool==false)
+	then
+		activatedAlarms.add($alarm);
+	end
+
+rule "Is interval alarm triggered"
+	when
+	  $device: Device(type == DeviceType.INTERVAL_DEVICE)
+	  $alarm: DeviceAlarm($borderMin: borderMin, $borderMax: borderMax)
+      $message: Message(value > $borderMin && value < $borderMax)
+
+	then
+		activatedAlarms.add($alarm);
 	end

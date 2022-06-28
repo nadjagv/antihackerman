@@ -92,3 +92,6 @@ INSERT INTO DEVICES(deleted, file_path, filter, name, read_interval_mils, type, 
 
 INSERT INTO BOOLEAN_DEVICES(active_false_str, active_true_str, id) VALUES ('Lamp off.', 'Lamp on.',1);
 INSERT INTO INTERVAL_DEVICES(value_definition, min_value, max_value, id) VALUES ('temperature in degrees celsius', 0, 60, 2);
+
+INSERT INTO DEVICE_ALARMS(name, alarm_for_bool, border_min, border_max, activation_count, device_id) VALUES ('Lamp on alarm.', true, null, null, 0,1);
+INSERT INTO DEVICE_ALARMS(name, alarm_for_bool, border_min, border_max, activation_count, device_id) VALUES ('Temperature high alarm.', false, 53, 58, 0,2);

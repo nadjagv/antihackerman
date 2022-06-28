@@ -46,7 +46,7 @@ public class Device {
     @ManyToOne(fetch = FetchType.LAZY)
     private RealEstate realestate;
 
-    @OneToMany(mappedBy = "device", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "device", fetch = FetchType.EAGER)
     private Set<DeviceAlarm> alarms=new HashSet<>();
 
 
