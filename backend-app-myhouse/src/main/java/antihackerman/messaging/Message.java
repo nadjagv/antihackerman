@@ -14,6 +14,6 @@ import java.sql.Timestamp;
 @Builder
 public class Message {
     private String message;
-    private Double value;
+    private Long value;
     private Timestamp timestamp;
 }

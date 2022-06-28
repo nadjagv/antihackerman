@@ -1,8 +1,10 @@
 package antihackerman.messaging;
 
+import antihackerman.exceptions.NotFoundException;
 import antihackerman.model.Device;
 import antihackerman.model.DeviceType;
 import antihackerman.repository.DeviceRepository;
+import antihackerman.service.DeviceService;
 import antihackerman.util.FilterUtil;
 import lombok.SneakyThrows;
 import org.bson.json.JsonObject;
@@ -42,6 +44,7 @@ public class MessageReader implements Runnable{
     @Override
     public void run() {
         Double lastMsgTimestampMils = 0.0;
+
 
         while(true){
             JSONParser jsonParser = new JSONParser();

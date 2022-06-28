@@ -2,7 +2,9 @@ package antihackerman.controller;
 
 import antihackerman.dto.RealEstateDTO;
 import antihackerman.exceptions.NotFoundException;
+import antihackerman.messaging.Message;
 import antihackerman.model.RealEstate;
+import antihackerman.service.DeviceService;
 import antihackerman.service.RealEstateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @CrossOrigin(origins = {"http://localhost:3010/" })
@@ -19,6 +22,7 @@ import java.util.Set;
 public class RealEstateController {
     @Autowired
     private RealEstateService realEstateService;
+
 
     @GetMapping("/{groupId}/{username}")
     @PreAuthorize("hasAuthority('READ_REALESTATES_USER')")
@@ -36,6 +40,7 @@ public class RealEstateController {
             return new ResponseEntity<ArrayList<RealEstateDTO>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
     }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('READ_REALESTATE')")
