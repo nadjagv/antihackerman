@@ -24,10 +24,10 @@ public class DeviceAlarm {
     private boolean alarmForBool;
 
     @Column(name = "border_min")
-    private Double borderMin;
+    private Long borderMin;
 
     @Column(name = "border_max")
-    private Double borderMax;
+    private Long borderMax;
 
     @Column(name = "activation_count", nullable = false)
     private Integer activationCount;
