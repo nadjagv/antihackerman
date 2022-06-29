@@ -37,5 +37,41 @@ public class LogService {
 		Log log=new Log(LogType.ERROR, deviceId.toString(), "", message,true);
         logsRepository.insert(log);
 	}
+	
+	public List<Log> getDeviceLogs(String start,String end){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+		LocalDateTime startLDT=null;
+		LocalDateTime endLDT=null;
+		if(start!=null) {
+			startLDT=LocalDateTime.parse(start, formatter);
+		}
+		if(end!=null) {
+			endLDT=LocalDateTime.parse(end, formatter);
+		}
+		
+		List<Log> logs=logsRepository.findAll();
+		List<Log> returnLogs=new ArrayList<Log>();
+		for(Log l:logs) {
+			if(!l.isDevice()) {
+				continue;
+			}
+			boolean check=true;
+			if(startLDT!=null) {
+        		if(!l.getTimestamp().isAfter(startLDT)) {
+        			check=false;
+        		}
+        	}
+        	if(endLDT!=null) {
+        		if(!l.getTimestamp().isBefore(endLDT)) {
+        			check=false;
+        		}
+        	}
+        	if(check) {
+        		returnLogs.add(l);
+        	}
+		}
+		
+		return returnLogs;
+	}
 
 }

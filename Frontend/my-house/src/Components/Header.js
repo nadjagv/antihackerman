@@ -48,6 +48,16 @@ function Header(props) {
               component="div"
               sx={{ flexGrow: 1 }}
             >
+              <Link style={{ textDecoration: "none" }} to="/report">
+                Report
+              </Link>
+            </Typography>
+            <Typography
+              color="inherit"
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
               <Link
                 style={{ textDecoration: "none" }}
                 to="/"
