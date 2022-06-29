@@ -71,7 +71,6 @@ insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,15);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,16);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,19);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,21);
-insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,23);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,24);
 
 --tenant privileges
