@@ -15,6 +15,7 @@ import AuthService from "./Services/AuthService";
 import Device from "./Components/Device";
 import {NotificationContainer} from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
+import Report from "./Components/Report";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -73,6 +74,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Device />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/report"
+            element={
+              <ProtectedRoute>
+                <Report />
               </ProtectedRoute>
             }
           ></Route>
