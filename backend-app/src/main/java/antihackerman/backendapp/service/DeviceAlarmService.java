@@ -67,5 +67,7 @@ public class DeviceAlarmService {
         if (deviceAlarm == null){
             throw new NotFoundException("Device alarm with id " + id + " not found.");
         }
+
+        deviceAlarmRepository.delete(deviceAlarm);
     }
 }
