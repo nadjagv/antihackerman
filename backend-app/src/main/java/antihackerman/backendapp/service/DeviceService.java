@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DeviceService {
@@ -38,11 +39,16 @@ public class DeviceService {
     private RealEstateRepository realEstateRepository;
 
     public Device getById(Integer id) throws NotFoundException {
+        Optional<IntervalDevice> ind = intervalDeviceRepository.findById(id);
+        Optional<BooleanDevice> bd = booleanDeviceRepository.findById(id);
         Device device = deviceRepository.getById(id);
-        if (device == null){
+        if (ind.isPresent()) {
+            return ind.get();
+        } else if (bd.isPresent()) {
+            return bd.get();
+        } else {
             throw new NotFoundException("Device with id " + id + " not found.");
         }
-        return device;
     }
 
     public Device addDevice(DeviceDTO dto) throws NotFoundException, InvalidInputException {
