@@ -33,12 +33,15 @@ public class Log {
 	
 	private String ip;
 	
-	public Log(LogType type,String username,String ip,String desc) {
+	private boolean isDevice;
+	
+	public Log(LogType type,String username,String ip,String desc,boolean isDevice) {
 		this.ip=ip;
 		this.type=type;
 		this.desc=desc;
 		this.username=username;
 		this.timestamp=LocalDateTime.now();
+		this.isDevice=isDevice;
 	}
 	
 

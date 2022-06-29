@@ -24,13 +24,18 @@ public class LogService {
 	
 	
 	public void createLog(LogType type,String username,String ipAddress,String message) {
-		Log log=new Log(type, username, ipAddress, message);
+		Log log=new Log(type, username, ipAddress, message,false);
         logsRepository.insert(log);
         //fire alarms
         
         if(type==LogType.ERROR) {
         	notificationService.simpleNotification(message);
         }
+	}
+	
+	public void createDeviceLog(Integer deviceId,String message) {
+		Log log=new Log(LogType.ERROR, deviceId.toString(), "", message,true);
+        logsRepository.insert(log);
 	}
 
 }

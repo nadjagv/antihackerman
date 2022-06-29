@@ -7,6 +7,7 @@ import antihackerman.model.DeviceType;
 import antihackerman.model.User;
 import antihackerman.repository.DeviceRepository;
 import antihackerman.service.DeviceService;
+import antihackerman.service.LogService;
 import antihackerman.service.NotificationService;
 import antihackerman.util.FilterUtil;
 import lombok.SneakyThrows;
@@ -40,12 +41,14 @@ public class MessageReader implements Runnable{
     private final KieContainer kieContainer;
     
     private NotificationService notificationService;
+    private LogService logService;
 
-    public MessageReader(Device device, String path,KieContainer kieContainer,NotificationService notificationService){
+    public MessageReader(Device device, String path,KieContainer kieContainer,NotificationService notificationService,LogService logService){
         this.device = device;
         this.devicesDirPath = path;
         this.kieContainer=kieContainer;
         this.notificationService=notificationService;
+        this.logService=logService;
     }
 
     @SneakyThrows
@@ -113,6 +116,8 @@ public class MessageReader implements Runnable{
                     	for(User u:da.getDevice().getRealestate().getGroup().getOwners()) {
                     		notificationService.userNotification(msg.get("message").toString(), u.getUsername());
                     	}
+                    	
+                    	logService.createDeviceLog(da.getDevice().getId(), msg.get("message").toString());
                     }
 
                 }

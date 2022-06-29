@@ -32,10 +32,6 @@ public class LogService {
 		return logsRepository.findAll();
 	}
 	
-	public List<Log> find(LogType type,String user){
-		return logsRepository.findLogs(type,user);
-	}
-	
 	public List<Log> findFilltered(LogType type,String start,String end,String user,String descContains){
 		List<Log> logs=logsRepository.findAll();
 		
@@ -51,6 +47,10 @@ public class LogService {
 		
 		List<Log> logsRes=new ArrayList<Log>();
         for(Log l: logs) {
+        	
+        	if(l.isDevice()) {
+        		continue;
+        	}
         	
         	KieSession kieSession = kContainer.newKieSession();
             kieSession.insert(l);
@@ -92,7 +92,7 @@ public class LogService {
 	}
 	
 	public void createLog(LogType type,String username,String ipAddress,String message) {
-		Log log=new Log(type, username, ipAddress, message);
+		Log log=new Log(type, username, ipAddress, message,false);
         logsRepository.insert(log);
         
         //fire alarms
