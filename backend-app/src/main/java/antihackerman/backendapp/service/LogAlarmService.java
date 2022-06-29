@@ -26,12 +26,23 @@ public class LogAlarmService {
         if (dto.getName() == null){
             throw new InvalidInputException("Invalid data in creating LogAlarm - name must not be null.");
         }
+        int conditions=0;
+        if(dto.getCharSequence()!=null && !dto.getCharSequence().isEmpty()) {
+        	conditions++;
+        }
+        if(dto.getLogType()!=null) {
+        	conditions++;
+        }
+        if(dto.getUsername()!=null && !dto.getUsername().isEmpty()) {
+        	conditions++;
+        }
         LogAlarm logAlarm = LogAlarm.builder()
                 .name(dto.getName())
                 .logType(dto.getLogType())
                 .username(dto.getUsername())
                 .charSequence(dto.getCharSequence())
                 .deleted(false)
+                .conditionsToSatisfy(conditions)
                 .build();
 
         return  logAlarmRepository.save(logAlarm);

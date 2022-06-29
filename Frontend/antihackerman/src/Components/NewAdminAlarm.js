@@ -23,24 +23,47 @@ import {
 const types = ["INFO", "SUCCESS", "WARNING", "ERROR"];
 
 export default function NewAdminAlarm() {
-  const [type, setType] = useState("");
+  const [type, setType] = useState("INFO");
   const [name, setName] = useState("");
   const [user, setUser] = useState("");
   const [seq, setSeq] = useState("");
+  const [alarms, setAlarms] = useState([]);
 
   axios.defaults.withCredentials = true;
 
-  const addAlarm=()=>{
-    if(!name){
-        alert("Name can't be empty!")
-    }
-    else{
-        if(!user && !type && !seq){
-            alert("At least one field needs to be filled!")
-        }else{
-            //connect to backend
+  useEffect(() => {
+    axios.get(environment.baseURL + "log-alarms").then((response) => {
+      console.log(response.data);
+      setAlarms(response.data);
+    });
+  }, []);
+
+  const addAlarm = () => {
+    if (!name) {
+      alert("Name can't be empty!");
+    } else {
+      if (!user && !type && !seq) {
+        alert("At least one field needs to be filled!");
+      } else {
+        let alarm={
+            name: name,
+            username: user,
+            charSequence: seq,
+            logType: type,
         }
+        axios.post(environment.baseURL + "log-alarms",alarm).then((response) => {
+            setAlarms([...alarms,response.data])
+          });
+      }
     }
+  };
+
+  const deleteAlarm=(id)=>{
+    axios.delete(environment.baseURL + "log-alarms/"+id).then((response) => {
+        console.log(response.data);
+        const newAlarms=alarms.filter(a=>a.id!=id)
+        setAlarms(newAlarms)
+      });
   }
 
   return (
@@ -97,11 +120,51 @@ export default function NewAdminAlarm() {
             }}
             value={seq}
           />
-          <Button onClick={() => {addAlarm()}} variant="contained">
+          <Button
+            onClick={() => {
+              addAlarm();
+            }}
+            variant="contained"
+            color="success"
+          >
             Add
           </Button>
         </Stack>
       </Stack>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Log Type</TableCell>
+              <TableCell>User</TableCell>
+              <TableCell>Sequence</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {alarms.map((a) => (
+              <TableRow key={a.id}>
+                <TableCell>{a.name}</TableCell>
+                <TableCell>{a.logType}</TableCell>
+                <TableCell>{a.username}</TableCell>
+                <TableCell>{a.charSequence}</TableCell>
+                <TableCell>
+                  <Button
+                    onClick={() => {
+                      deleteAlarm(a.id);
+                    }}
+                    variant="contained"
+                    color="error"
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }
