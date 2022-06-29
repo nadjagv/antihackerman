@@ -1,6 +1,8 @@
 package antihackerman.service;
 
+import antihackerman.dto.ReportDeviceDTO;
 import antihackerman.exceptions.NotFoundException;
+import antihackerman.logs.Log;
 import antihackerman.messaging.Filter;
 import antihackerman.messaging.Message;
 import antihackerman.messaging.MessageReader;
@@ -27,6 +29,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -116,10 +120,10 @@ public class DeviceService {
         }
     }
 
-    public Set<Device> getAllDevicesForUser(Integer userId) throws NotFoundException {
-        User user = userRepository.getById(userId);
+    public Set<Device> getAllDevicesForUser(String username) throws NotFoundException {
+        User user=userRepository.findOneByUsername(username);
         if (user == null){
-            throw new NotFoundException("User with id " + userId + " not found.");
+            throw new NotFoundException("User with username " + username + " not found.");
         }
 
         Set<Device> result = new HashSet<>();
@@ -134,5 +138,27 @@ public class DeviceService {
         }
 
         return result;
+    }
+    
+    public HashMap<Integer, ReportDeviceDTO> formReport(String username,String start,String end) throws NotFoundException {
+		
+		Set<Device> devices=getAllDevicesForUser(username);
+		List<Log> logs=logService.getDeviceLogs(start,end);
+		HashMap<Integer, ReportDeviceDTO> dtos=new HashMap<Integer, ReportDeviceDTO>();
+		
+		for(Log l:logs) {
+			Optional<Device> device=devices.stream().filter(d -> d.getId().equals(Integer.parseInt(l.getUsername()))).findAny();
+			if(device.isPresent()) {
+				if(dtos.containsKey(device.get().getId())) {
+					dtos.get(device.get().getId()).increaseNumber();
+				}else {
+					dtos.put(device.get().getId(), new ReportDeviceDTO(device.get().getName(), device.get().getRealestate().getName(), device.get().getRealestate().getGroup().getName(), device.get().getId(), 1));
+				}
+			}
+					
+		}
+		
+		return dtos;
+    	
     }
 }

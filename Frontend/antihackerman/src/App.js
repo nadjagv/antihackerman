@@ -22,6 +22,7 @@ import { NotificationContainer } from "react-notifications";
 import "react-notifications/lib/notifications.css";
 import Device from "./Components/Device";
 import NewAlarm from "./Components/newAlarm";
+import NewAdminAlarm from "./Components/NewAdminAlarm";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -134,6 +135,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Logs />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            exact
+            path="/alarm"
+            element={
+              <ProtectedRoute>
+                <NewAdminAlarm />
               </ProtectedRoute>
             }
           ></Route>

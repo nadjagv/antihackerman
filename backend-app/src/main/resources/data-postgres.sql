@@ -28,6 +28,7 @@ insert into privileges(name,deleted) VALUES ('READ_LOGS',false);            --20
 insert into privileges(name,deleted) VALUES ('READ_MESSAGES_USER',false);   --21
 insert into privileges(name,deleted) VALUES ('CRUD_DEVICE_ALARM',false);    --22
 insert into privileges(name,deleted) VALUES ('CRUD_LOG_ALARM',false);       --23
+insert into privileges(name,deleted) VALUES ('READ_REPORT',false);   		--24
 
 --roles
 
@@ -59,6 +60,7 @@ insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,19);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,20);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,22);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,23);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,24);
 
 --owner privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,2);
@@ -69,6 +71,8 @@ insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,15);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,16);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,19);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,21);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,23);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,24);
 
 --tenant privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,6);
@@ -78,6 +82,7 @@ insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,15);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,16);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,19);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,21);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (3,24);
 
 --user-roles
 

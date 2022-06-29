@@ -31,7 +31,7 @@ function Device() {
     axios.get(environment.baseURL + "devices/" + id).then((response) => {
       setDigital(response.data.type === "INTERVAL_DEVICE" ? true : false);
     });
-    setDigital(true);
+    //setDigital(true);
 
     axios
       .get(environment.baseURL + "device-alarms/device/" + id)
