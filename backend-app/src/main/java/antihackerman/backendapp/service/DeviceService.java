@@ -88,7 +88,9 @@ public class DeviceService {
                     .activeFalseStr(dto.getActiveFalseStr())
                     .activeTrueStr(dto.getActiveTrueStr())
                     .build();
-            return booleanDeviceRepository.save(device);
+            BooleanDevice bd=booleanDeviceRepository.save(device);
+            this.createConfigFile();
+            return bd;
         }else{
             if (dto.getMaxValue() == null || dto.getMinValue()==null || dto.getValueDefinition()==null){
                 throw new InvalidInputException("Missing input.");
@@ -106,7 +108,9 @@ public class DeviceService {
                     .maxValue(dto.getMaxValue())
                     .minValue(dto.getMinValue())
                     .build();
-            return intervalDeviceRepository.save(device);
+            IntervalDevice intd=intervalDeviceRepository.save(device);
+            this.createConfigFile();
+            return intd;
         }
 
     }
@@ -119,6 +123,7 @@ public class DeviceService {
         }
 
         deviceRepository.delete(device);
+        this.createConfigFile();
 
     }
     
