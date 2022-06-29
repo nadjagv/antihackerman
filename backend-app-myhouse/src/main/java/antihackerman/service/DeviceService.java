@@ -5,7 +5,11 @@ import antihackerman.messaging.Filter;
 import antihackerman.messaging.Message;
 import antihackerman.messaging.MessageReader;
 import antihackerman.model.Device;
+import antihackerman.model.Group;
+import antihackerman.model.RealEstate;
+import antihackerman.model.User;
 import antihackerman.repository.DeviceRepository;
+import antihackerman.repository.UserRepository;
 import antihackerman.util.FilterUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -23,14 +27,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.InvalidPropertiesFormatException;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class DeviceService {
     @Autowired
     DeviceRepository deviceRepository;
+
+    @Autowired
+    UserRepository userRepository;
     
     @Autowired
     private KieContainer kContainer;
@@ -106,5 +111,25 @@ public class DeviceService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Set<Device> getAllDevicesForUser(Integer userId) throws NotFoundException {
+        User user = userRepository.getById(userId);
+        if (user == null){
+            throw new NotFoundException("User with id " + userId + " not found.");
+        }
+
+        Set<Device> result = new HashSet<>();
+        for (RealEstate re: user.getRealestatesTenanting()) {
+            result.addAll(re.getDevices());
+        }
+
+        for (Group g: user.getGroupsOwning()) {
+            for (RealEstate re: g.getRealEstates()) {
+                result.addAll(re.getDevices());
+            }
+        }
+
+        return result;
     }
 }
