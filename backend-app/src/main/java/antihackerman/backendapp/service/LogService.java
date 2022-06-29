@@ -2,10 +2,10 @@ package antihackerman.backendapp.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import antihackerman.backendapp.model.LogAlarm;
+import antihackerman.backendapp.repository.LogAlarmRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +21,12 @@ public class LogService {
 	
 	@Autowired
 	private LogsRepository logsRepository;
+
+	@Autowired
+	private LogAlarmRepository logAlarmRepository;
 	
 	@Autowired
-    private KieContainer kContainer;
+    private KieContainer kieContainer;
 	
 	@Autowired
 	private NotificationService notificationService;
@@ -51,11 +54,6 @@ public class LogService {
         	if(l.isDevice()) {
         		continue;
         	}
-        	
-        	KieSession kieSession = kContainer.newKieSession();
-            kieSession.insert(l);
-            kieSession.fireAllRules();
-            kieSession.dispose();
         	
         	boolean check=true;
         	if(type!=null) {
@@ -99,6 +97,49 @@ public class LogService {
         if(type==LogType.ERROR) {
         	notificationService.simpleNotification(message);
         }
+
+		List<LogAlarm> allAlarms = logAlarmRepository.findAll();
+		Set<LogAlarm> logTypeActivated = new HashSet<>();
+		Set<LogAlarm> activated = new HashSet<>();
+		for (LogAlarm la: allAlarms) {
+			Integer numConditions = la.getConditionsToSatisfy();
+
+			if (la.getLogType() != null){
+				KieSession kieSession = kieContainer.newKieSession();
+				kieSession.insert(la);
+				kieSession.insert(log);
+				kieSession.setGlobal("logTypeActivated", logTypeActivated);
+				kieSession.fireAllRules();
+				kieSession.dispose();
+
+				if (!logTypeActivated.isEmpty()){
+					numConditions--;
+
+				}
+			}
+
+			if (la.getUsername()!= null && !la.getUsername().isEmpty()){
+				if (message.contains(la.getUsername())){
+					numConditions--;
+				}
+			}
+
+			if (la.getCharSequence()!= null && !la.getCharSequence().isEmpty()){
+				if (message.contains(la.getCharSequence())){
+					numConditions--;
+				}
+			}
+
+			if (numConditions==0){
+				activated.add(la);
+			}
+
+		}
+		for (LogAlarm la : activated) {
+			System.out.println("Alarm: " + la.getName() + " activated: " + message);
+			notificationService.simpleNotification("Alarm: " + la.getName() + " activated: " + message);
+		}
+
 	}
 
 }

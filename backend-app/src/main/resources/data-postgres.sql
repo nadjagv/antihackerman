@@ -26,7 +26,8 @@ insert into privileges(name,deleted) VALUES ('DELETE_DEVICE',false);        --18
 insert into privileges(name,deleted) VALUES ('READ_REALESTATE',false);      --19
 insert into privileges(name,deleted) VALUES ('READ_LOGS',false);            --20
 insert into privileges(name,deleted) VALUES ('READ_MESSAGES_USER',false);   --21
-insert into privileges(name,deleted) VALUES ('CRUD_DEVICE_ALARM',false);   --22
+insert into privileges(name,deleted) VALUES ('CRUD_DEVICE_ALARM',false);    --22
+insert into privileges(name,deleted) VALUES ('CRUD_LOG_ALARM',false);       --23
 
 --roles
 
@@ -57,6 +58,7 @@ insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,18);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,19);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,20);
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,22);
+insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (1,23);
 
 --owner privileges
 insert into ROLES_PRIVILEGES (role_id,privilege_id) VALUES (2,2);
@@ -107,3 +109,7 @@ INSERT INTO INTERVAL_DEVICES(value_definition, min_value, max_value, id) VALUES 
 
 INSERT INTO DEVICE_ALARMS(name, alarm_for_bool, border_min, border_max, activation_count, device_id) VALUES ('Lamp on alarm.', true, null, null, 0,1);
 INSERT INTO DEVICE_ALARMS(name, alarm_for_bool, border_min, border_max, activation_count, device_id) VALUES ('Temperature high alarm.', false, 53, 58, 0,2);
+
+
+INSERT INTO LOG_ALARMS(name, log_type, username, char_sequence, deleted, conditions_to_satisfy) VALUES ('INFO log alarm: ', 0, null, 'colle', false, 2);
+INSERT INTO LOG_ALARMS(name, log_type, username, char_sequence, deleted, conditions_to_satisfy) VALUES ('User3 log alarm: ', null, 'user3', null, false, 1);

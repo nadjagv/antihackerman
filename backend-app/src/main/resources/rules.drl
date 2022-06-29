@@ -1,8 +1,14 @@
 import antihackerman.backendapp.logs.*
+import antihackerman.backendapp.model.*
 
-rule "test"
+import java.util.HashSet;
+
+global HashSet<LogAlarm> logTypeActivated;
+
+rule "Check to activate alarm for log type"
 	when
-	  $log: Log(type==LogType.INFO)
+	  $log: Log($type: type)
+	  $alarm: LogAlarm(logType == $type)
 	then
-		System.out.println("Djana");
+		logTypeActivated.add($alarm);
 	end

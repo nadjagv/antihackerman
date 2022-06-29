@@ -1,10 +1,7 @@
 package antihackerman.messaging;
 
 import antihackerman.exceptions.NotFoundException;
-import antihackerman.model.Device;
-import antihackerman.model.DeviceAlarm;
-import antihackerman.model.DeviceType;
-import antihackerman.model.User;
+import antihackerman.model.*;
 import antihackerman.repository.DeviceRepository;
 import antihackerman.service.DeviceService;
 import antihackerman.service.LogService;
@@ -32,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.InvalidPropertiesFormatException;
 
 public class MessageReader implements Runnable{
@@ -100,6 +98,7 @@ public class MessageReader implements Runnable{
                         kieSession.insert(da);
                     }
                     kieSession.setGlobal("activatedAlarms", activatedAlarms);
+                    kieSession.getAgenda().getAgendaGroup("deviceGroup").setFocus();
 
                     kieSession.fireAllRules();
                     kieSession.dispose();
@@ -107,7 +106,6 @@ public class MessageReader implements Runnable{
                     System.out.println(msg.get("message"));
                     System.out.println("Alarms activated: "+ activatedAlarms.size());
 
-                    //TODO: soketi, aktivirani alarmi su u listi activatedAlarms
                     
                     for(DeviceAlarm da: activatedAlarms) {
                     	for(User u:da.getDevice().getRealestate().getTenants()) {
