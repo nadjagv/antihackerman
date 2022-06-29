@@ -67,6 +67,11 @@ public class DeviceController {
             e.printStackTrace();
             logService.createLog(LogType.WARNING, username, request.getRemoteAddr(), "User: "+username+" requested creating device invalid data.");
             return new ResponseEntity<DeviceDTO>(new DeviceDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (NotUniqueException e) {
+            e.printStackTrace();
+            logService.createLog(LogType.WARNING, username, request.getRemoteAddr(), "User: "+username+" requested creating device but filename is taken.");
+            return new ResponseEntity<DeviceDTO>(new DeviceDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
+
         }
 
     }

@@ -44,4 +44,11 @@ public class InputValidationUtil {
                 .matcher(username)
                 .matches();
     }
+
+    public static boolean isFilenameValid(String filename){
+        String regexPattern = "^[\\w,\\s-]+\\.json$";
+        return Pattern.compile(regexPattern)
+                .matcher(filename)
+                .matches();
+    }
 }

@@ -4,6 +4,7 @@ import antihackerman.backendapp.dto.DeviceConfigDTO;
 import antihackerman.backendapp.dto.DeviceDTO;
 import antihackerman.backendapp.exception.InvalidInputException;
 import antihackerman.backendapp.exception.NotFoundException;
+import antihackerman.backendapp.exception.NotUniqueException;
 import antihackerman.backendapp.model.*;
 import antihackerman.backendapp.repository.BooleanDeviceRepository;
 import antihackerman.backendapp.repository.DeviceRepository;
@@ -11,6 +12,7 @@ import antihackerman.backendapp.repository.IntervalDeviceRepository;
 import antihackerman.backendapp.repository.RealEstateRepository;
 import antihackerman.backendapp.util.FileUtil;
 import antihackerman.backendapp.util.FilterUtil;
+import antihackerman.backendapp.util.InputValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -51,11 +56,29 @@ public class DeviceService {
         }
     }
 
-    public Device addDevice(DeviceDTO dto) throws NotFoundException, InvalidInputException {
+    public Device addDevice(DeviceDTO dto) throws NotFoundException, InvalidInputException, NotUniqueException {
 
         RealEstate realEstate = realEstateRepository.getById(dto.getRealestateId());
         if (realEstate == null){
             throw new NotFoundException("Real Estate with id " + dto.getRealestateId() + " not found.");
+        }
+
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        String separator = System.getProperty("file.separator");
+        File file = new File(s);
+        String project_dir = file.getParent();
+        System.out.println(project_dir);
+        String devicesFolder = project_dir + separator +  "backend-app-myhouse" + separator + "src" + separator + "main" + separator + "resources"
+                + separator + "devices" + separator;
+
+        if (!InputValidationUtil.isFilenameValid(dto.getFilePath())){
+            throw new InvalidInputException("Invalid filename.");
+        }
+
+        Path filePath = Paths.get(devicesFolder + dto.getFilePath());
+        if(Files.exists(filePath)){
+            throw new NotUniqueException("Filename already taken.");
         }
 
         dto.setFilter(FilterUtil.trimAndLower(dto.getFilter()));
