@@ -68,7 +68,7 @@ function NewAlarm() {
               <TextField
                 id="outlined-border-min-input"
                 label="Border min"
-                type="text"
+                type="number"
                 onChange={(e) => setBorderMin(e.target.value)}
                 value={borderMin}
               />
@@ -95,7 +95,7 @@ function NewAlarm() {
               <TextField
                 id="outlined-border-max-input"
                 label="Border max"
-                type="text"
+                type="number"
                 onChange={(e) => setBorderMax(e.target.value)}
                 value={borderMax}
               />
