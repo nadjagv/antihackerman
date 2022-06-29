@@ -37,7 +37,7 @@ public class LogAlarmController {
 
     @GetMapping("")
     @PreAuthorize("hasAuthority('CRUD_LOG_ALARM')")
-    public ResponseEntity<ArrayList<LogAlarmDTO>> getAll(@RequestHeader(name="Authorization") String token, HttpServletRequest request, @PathVariable Integer deviceId){
+    public ResponseEntity<ArrayList<LogAlarmDTO>> getAll(@RequestHeader(name="Authorization") String token, HttpServletRequest request){
         String username=tokenUtils.getUsernameFromToken(token.substring(7));
 
         try {
