@@ -45,6 +45,8 @@ public class GroupController {
             return new ResponseEntity<ArrayList<GroupDTO>>(dtos, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
+            logService.createLog(LogType.ERROR, username, request.getRemoteAddr(), "User: "+username+" requested his/hers groups but not in database.");
+
             return new ResponseEntity<ArrayList<GroupDTO>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
     }

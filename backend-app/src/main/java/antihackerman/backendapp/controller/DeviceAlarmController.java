@@ -40,6 +40,7 @@ public class DeviceAlarmController {
     @GetMapping("/device/{deviceId}")
     @PreAuthorize("hasAuthority('CRUD_DEVICE_ALARM')")
     public ResponseEntity<ArrayList<DeviceAlarmDTO>> getAll(@RequestHeader (name="Authorization") String token, HttpServletRequest request, @PathVariable Integer deviceId){
+        String username=tokenUtils.getUsernameFromToken(token.substring(7));
 
         try {
             Set<DeviceAlarm> deviceAlarms = deviceAlarmService.getAlarmsForDevice(deviceId);
@@ -48,29 +49,35 @@ public class DeviceAlarmController {
                 dtos.add(new DeviceAlarmDTO(g));
             }
 
-            String username=tokenUtils.getUsernameFromToken(token.substring(7));
-
             logService.createLog(LogType.INFO, username, request.getRemoteAddr(), "User: "+username+" collected all alarms for device.");
 
             return new ResponseEntity<ArrayList<DeviceAlarmDTO>>(dtos, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
+            logService.createLog(LogType.ERROR, username, request.getRemoteAddr(), "User: "+username+" requested all alarms for device not in database.");
+
             return new ResponseEntity<ArrayList<DeviceAlarmDTO>>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping()
     @PreAuthorize("hasAuthority('CRUD_DEVICE_ALARM')")
-    public ResponseEntity<DeviceAlarmDTO> createDeviceAlarm(@RequestBody DeviceAlarmDTO dto){
+    public ResponseEntity<DeviceAlarmDTO> createDeviceAlarm(@RequestBody DeviceAlarmDTO dto, @RequestHeader (name="Authorization") String token, HttpServletRequest request){
+        String username=tokenUtils.getUsernameFromToken(token.substring(7));
 
         try {
             DeviceAlarm deviceAlarm = deviceAlarmService.createDeviceAlarm(dto);
+            logService.createLog(LogType.SUCCESS, username, request.getRemoteAddr(), "User: "+username+" created alarm for device.");
+
             return new ResponseEntity<DeviceAlarmDTO>(new DeviceAlarmDTO(deviceAlarm), HttpStatus.OK);
         } catch (NotFoundException e) {
             e.printStackTrace();
+            logService.createLog(LogType.ERROR, username, request.getRemoteAddr(), "User: "+username+" requested creating alarm for device not in database.");
+
             return new ResponseEntity<DeviceAlarmDTO>(new DeviceAlarmDTO(), HttpStatus.NOT_FOUND);
         } catch (InvalidInputException e) {
             e.printStackTrace();
+            logService.createLog(LogType.WARNING, username, request.getRemoteAddr(), "User: "+username+" requested creating alarm invalid data.");
             return new ResponseEntity<DeviceAlarmDTO>(new DeviceAlarmDTO(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
@@ -78,12 +85,16 @@ public class DeviceAlarmController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('CRUD_DEVICE_ALARM')")
-    public ResponseEntity<String> deleteById(@PathVariable Integer id){
+    public ResponseEntity<String> deleteById(@PathVariable Integer id, @RequestHeader (name="Authorization") String token, HttpServletRequest request){
+        String username=tokenUtils.getUsernameFromToken(token.substring(7));
+
         try {
             deviceAlarmService.deleteDeviceAlarm(id);
+            logService.createLog(LogType.SUCCESS, username, request.getRemoteAddr(), "User: "+username+" deleted alarm for device.");
             return new ResponseEntity<String>("Success", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
+            logService.createLog(LogType.ERROR, username, request.getRemoteAddr(), "User: "+username+" requested deleting alarm for device not in database.");
             return new ResponseEntity<String>("Device alarm not in database.", HttpStatus.NOT_FOUND);
         }
     }
