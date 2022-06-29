@@ -21,6 +21,22 @@ function NewDigitalDevice() {
   axios.defaults.withCredentials = true;
 
   const newDevice = () => {
+    if (deviceName === "" || filepath === "" || valueDefinition === "") {
+      alert("Empty fields");
+      return;
+    }
+    let validFilter = new RegExp("^([=><][1-9][0-9]*)?$");
+    if (!validFilter.test(filter)) {
+      alert("Invalid filter field");
+      return;
+    }
+
+    let validFilePath = new RegExp("^[\\w,\\s-]+\\.json$");
+    if (!validFilePath.test(filepath)) {
+      alert("Invalid filepath");
+      return;
+    }
+
     let Device = {
       name: deviceName,
       filePath: filepath,
@@ -48,7 +64,7 @@ function NewDigitalDevice() {
           noValidate
           autoComplete="off"
         >
-          <Typography variant="h6">Create new Analog Device</Typography>
+          <Typography variant="h6">Create new Digital Device</Typography>
           <Stack spacing="3" alignItems="center">
             <TextField
               id="outlined-device-name-input"
@@ -60,7 +76,7 @@ function NewDigitalDevice() {
             <TextField
               id="outlined-interval-input"
               label="Interval in milis"
-              type="text"
+              type="number"
               onChange={(e) => setInterval(e.target.value)}
               value={interval}
             />
@@ -88,14 +104,14 @@ function NewDigitalDevice() {
             <TextField
               id="outlined-min-value-input"
               label="Minimal value"
-              type="text"
+              type="number"
               onChange={(e) => setMinValue(e.target.value)}
               value={minValue}
             />
             <TextField
               id="outlined-max-value-input"
               label="Maximum value"
-              type="text"
+              type="number"
               onChange={(e) => setMaxValue(e.target.value)}
               value={maxValue}
             />

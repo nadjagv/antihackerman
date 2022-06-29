@@ -13,13 +13,34 @@ function NewAnalogDevice() {
   const [deviceName, setDeviceName] = useState("");
   const [interval, setInterval] = useState("");
   const [filepath, setFilePath] = useState("");
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("false");
   const [zeroValue, setZeroValue] = useState("");
   const [oneValue, setOneValue] = useState("");
 
   axios.defaults.withCredentials = true;
 
   const newDevice = () => {
+    if (
+      deviceName === "" ||
+      filepath === "" ||
+      filter === "" ||
+      zeroValue === "" ||
+      oneValue === ""
+    ) {
+      alert("Empty fields");
+      return;
+    }
+    const validFilter = new RegExp("^true|false$");
+    if (!validFilter.test(filter)) {
+      alert("Invalid filter field");
+      return;
+    }
+    let validFilePath = new RegExp("^[\\w,\\s-]+\\.json$");
+    if (!validFilePath.test(filepath)) {
+      alert("Invalid filepath");
+      return;
+    }
+
     let Device = {
       name: deviceName,
       filePath: filepath,
@@ -58,7 +79,7 @@ function NewAnalogDevice() {
             <TextField
               id="outlined-interval-input"
               label="Interval in milis"
-              type="text"
+              type="number"
               onChange={(e) => setInterval(e.target.value)}
               value={interval}
             />
